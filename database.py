@@ -125,6 +125,11 @@ def init_db():
                 conn.execute(f"ALTER TABLE problems ADD COLUMN {col} TEXT DEFAULT ''")
             except Exception:
                 pass
+        # 迁移: 提交记录保存做题模式
+        try:
+            conn.execute("ALTER TABLE submissions ADD COLUMN mode TEXT DEFAULT 'acm'")
+        except Exception:
+            pass
 
 
 # ==================== 题目 CRUD ====================
@@ -268,14 +273,14 @@ def batch_add_test_cases(problem_id, cases):
 # ==================== 提交记录 ====================
 
 def create_submission(problem_id, code, status, time_ms=0, memory_kb=0,
-                      passed_cases=0, total_cases=0, detail=None):
+                      passed_cases=0, total_cases=0, detail=None, mode='acm'):
     detail_json = json.dumps(detail or [], ensure_ascii=False)
     with db_connection() as conn:
         cur = conn.execute(
             """INSERT INTO submissions (problem_id, code, status, time_ms, memory_kb,
-               passed_cases, total_cases, detail)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            (problem_id, code, status, time_ms, memory_kb, passed_cases, total_cases, detail_json)
+               passed_cases, total_cases, detail, mode)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (problem_id, code, status, time_ms, memory_kb, passed_cases, total_cases, detail_json, mode)
         )
         return cur.lastrowid
 

@@ -140,7 +140,7 @@ def api_submit(pid):
         problem_id=pid, code=code, status=result.status,
         time_ms=result.total_time_ms,
         passed_cases=result.passed_cases, total_cases=result.total_cases,
-        detail=result.detail,
+        detail=result.detail, mode=mode,
     )
     return jsonify(asdict(result))
 

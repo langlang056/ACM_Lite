@@ -180,17 +180,27 @@ async function loadProblem(pid) {
         srcEl.innerHTML = '<span class="text-xs text-slate-400">无</span>';
     }
 
-    // Submission count
-    const subRes = await fetch(`/api/submissions?problem_id=${pid}&limit=50`);
-    const subs = await subRes.json();
+    // 获取提交历史（统计 + 恢复上次代码和模式）
+    const subs = await (await fetch(`/api/submissions?problem_id=${pid}&limit=50`)).json();
     const acCount = subs.filter(s => s.status === 'Accepted').length;
     document.getElementById('solve-submission-count').textContent = `${acCount} AC / ${subs.length} 次提交`;
 
-    // Mode & Editor
-    currentMode = 'acm';
+    const lastCode = subs.length > 0 ? subs[0].code : '';
+
+    // 从代码内容检测上次使用的模式
+    let lastMode = 'acm';
+    if (lastCode && p.lc_template) {
+        const sig = p.lc_template.match(/^(?:def|class)\s+\w+/m);
+        if (sig && lastCode.includes(sig[0]) && !lastCode.includes('sys.stdin')) {
+            lastMode = 'core';
+        }
+    }
+
+    currentMode = lastCode ? lastMode : 'acm';
     savedCode = { acm: '', core: '' };
+    if (lastCode) savedCode[currentMode] = lastCode;
     updateModeUI();
-    initEditor(p.template_code || getDefaultTemplate());
+    initEditor(lastCode || (currentMode === 'core' ? (p.lc_template || '') : (p.template_code || getDefaultTemplate())));
 
     // Reset result panel & custom input
     document.getElementById('result-panel').classList.add('hidden');
@@ -322,9 +332,29 @@ async function submitCode() {
     btn.disabled = true; btn.textContent = '判题中...';
     try {
         const res = await fetch(`/api/submit/${currentProblem.id}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ code: editor.getValue(), mode: currentMode }) });
-        showResult(await res.json());
+        const result = await res.json();
+        showResult(result);
+        // 提交后更新提交计数
+        const subRes = await fetch(`/api/submissions?problem_id=${currentProblem.id}&limit=50`);
+        const subs = await subRes.json();
+        const acCount = subs.filter(s => s.status === 'Accepted').length;
+        document.getElementById('solve-submission-count').textContent = `${acCount} AC / ${subs.length} 次提交`;
+        // AC 时显示通过提示
+        if (result.status === 'Accepted') showAcceptedBanner();
     } catch(e) { alert('提交出错: ' + e.message); }
     finally { btn.disabled = false; btn.textContent = '提交'; }
+}
+
+function showAcceptedBanner() {
+    // 已有 banner 则跳过
+    if (document.getElementById('ac-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'ac-banner';
+    banner.className = 'fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-3 bg-green-500 text-white font-bold text-sm transition-opacity duration-500';
+    banner.textContent = 'Accepted — 全部用例通过!';
+    document.body.appendChild(banner);
+    setTimeout(() => { banner.style.opacity = '0'; }, 2000);
+    setTimeout(() => { banner.remove(); }, 2500);
 }
 
 function showResult(result) {
