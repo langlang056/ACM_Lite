@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ACM Lite - 本地刷题平台</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f49bd",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "system-ui", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .markdown-body h1,.markdown-body h2,.markdown-body h3 { font-weight:700; margin:1rem 0 0.5rem; }
+        .markdown-body h1 { font-size:1.5rem; }
+        .markdown-body h2 { font-size:1.25rem; }
+        .markdown-body h3 { font-size:1.1rem; }
+        .markdown-body p { margin:0.5rem 0; }
+        .markdown-body ul,.markdown-body ol { margin:0.5rem 0; padding-left:1.5rem; }
+        .markdown-body li { margin:0.25rem 0; }
+        .markdown-body code { background:#f1f5f9; padding:1px 6px; border-radius:4px; font-size:0.85em; }
+        .markdown-body pre { background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:8px; overflow-x:auto; margin:0.75rem 0; }
+        .markdown-body pre code { background:transparent; padding:0; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased">
+
+    <!-- ==================== 主页 ==================== -->
+    <div id="page-home" class="page">
+        <div class="relative flex min-h-screen flex-col items-center">
+            <div class="w-full max-w-[800px] px-6 py-8">
+                <!-- Header -->
+                <header class="flex items-center justify-between border-b border-slate-100 pb-6 mb-12">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-8 w-8 items-center justify-center bg-primary rounded">
+                            <span class="material-symbols-outlined text-white text-xl">terminal</span>
+                        </div>
+                        <h1 class="text-xl font-bold tracking-tight">ACM Lite</h1>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="showAddModal()" class="flex items-center gap-1.5 h-9 px-4 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-semibold text-slate-700 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            <span>添加题目</span>
+                        </button>
+                    </div>
+                </header>
+
+                <main class="space-y-12">
+                    <!-- 每日一题 -->
+                    <section>
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-6">每日一题</h2>
+                        <div id="daily-card" class="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:shadow-md">
+                            <div class="text-sm text-slate-400">加载中...</div>
+                        </div>
+                    </section>
+
+                    <!-- 统计 -->
+                    <section>
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-6">做题统计</h2>
+                        <div id="stats-cards" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        </div>
+                    </section>
+
+                    <!-- 题库 -->
+                    <section>
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">题库</h2>
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+                                    <input id="search-input" type="text" placeholder="搜索题目..." oninput="filterProblems()"
+                                        class="h-9 pl-9 pr-4 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-48"/>
+                                </div>
+                                <select id="filter-difficulty" onchange="filterProblems()"
+                                    class="h-9 px-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                                    <option value="">全部难度</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="problems-list" class="space-y-3">
+                        </div>
+                    </section>
+                </main>
+
+                <!-- Footer -->
+                <footer class="mt-24 pt-8 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
+                    <p>ACM Lite - 本地轻量刷题平台</p>
+                    <div class="flex gap-4">
+                        <a class="hover:text-primary cursor-pointer" onclick="exportProblems()">导出题库</a>
+                        <a class="hover:text-primary cursor-pointer" onclick="document.getElementById('import-file').click()">导入题库</a>
+                        <input type="file" id="import-file" accept=".json" class="hidden" onchange="importProblems(event)">
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 做题页 ==================== -->
+    <div id="page-solve" class="page hidden">
+        <div class="flex h-screen flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="flex h-14 items-center justify-between border-b border-slate-200 px-6 bg-white shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center justify-center size-8 rounded bg-slate-100">
+                        <span class="material-symbols-outlined text-primary text-[20px]">code</span>
+                    </div>
+                    <h2 id="solve-title" class="text-lg font-bold leading-tight tracking-tight"></h2>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="navigate('home')" class="flex items-center justify-center gap-2 rounded-lg h-9 px-4 border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                        <span>返回</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Split Layout -->
+            <main class="flex flex-1 overflow-hidden">
+                <!-- Left: Problem Description -->
+                <section class="w-1/2 flex flex-col border-r border-slate-200 bg-white">
+                    <div class="flex-1 overflow-y-auto p-8 no-scrollbar">
+                        <div class="max-w-2xl mx-auto">
+                            <!-- Meta badges -->
+                            <div id="solve-meta" class="flex items-center gap-2 mb-6"></div>
+                            <!-- Description -->
+                            <div id="solve-description" class="markdown-body text-slate-700 text-base leading-relaxed mb-8"></div>
+                            <!-- Test Cases -->
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-bold flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[20px]">science</span>
+                                        测试用例
+                                    </h3>
+                                    <button onclick="showAddTcModal()" class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">+ 添加用例</button>
+                                </div>
+                                <div id="testcases-list" class="space-y-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Bottom info bar -->
+                    <div id="solve-bottom-bar" class="border-t border-slate-200 p-6 bg-slate-50/50 shrink-0">
+                        <div class="max-w-2xl mx-auto flex items-center justify-between">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">来源</span>
+                                <div class="flex gap-2 mt-1" id="solve-source-tags"></div>
+                            </div>
+                            <div class="flex flex-col gap-1 items-end">
+                                <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">提交记录</span>
+                                <span id="solve-submission-count" class="text-sm text-slate-600 font-medium"></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right: Code Editor -->
+                <section class="w-1/2 flex flex-col bg-slate-50">
+                    <!-- Toolbar -->
+                    <div class="flex items-center justify-between px-4 py-2 border-b border-slate-200 bg-white shrink-0">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-semibold text-slate-700">Python 3</span>
+                            <div id="mode-toggle" class="flex items-center bg-slate-100 rounded-lg p-0.5">
+                                <button id="mode-btn-acm" onclick="switchMode('acm')"
+                                    class="px-3 py-1 rounded-md text-xs font-semibold transition-colors bg-white text-slate-900 shadow-sm">ACM</button>
+                                <button id="mode-btn-core" onclick="switchMode('core')"
+                                    class="px-3 py-1 rounded-md text-xs font-semibold transition-colors text-slate-500 hover:text-slate-700">核心代码</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="resetCode()" class="p-1.5 text-slate-400 hover:text-slate-600 transition-colors" title="重置代码">
+                                <span class="material-symbols-outlined text-[20px]">restart_alt</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Monaco Editor -->
+                    <div id="monaco-editor" class="flex-1 overflow-hidden"></div>
+
+                    <!-- Result panel (hidden by default) -->
+                    <div id="result-panel" class="border-t border-slate-200 bg-white max-h-[200px] overflow-y-auto no-scrollbar hidden">
+                        <div class="p-4 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span id="result-status" class="text-sm font-bold"></span>
+                                <span id="result-stats" class="text-xs text-slate-400"></span>
+                            </div>
+                            <div id="result-detail" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Custom input (inline, toggled by checkbox) -->
+                    <div id="custom-input-panel" class="hidden border-t border-slate-200 bg-white shrink-0">
+                        <div class="px-4 pt-3 pb-2">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">自定义输入</span>
+                                <span id="custom-input-hint" class="text-[10px] text-slate-400"></span>
+                            </div>
+                            <textarea id="custom-input" rows="3" placeholder="在这里输入测试数据..."
+                                class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="border-t border-slate-200 p-4 bg-white flex justify-between items-center shrink-0">
+                        <label class="flex items-center gap-2 text-sm text-slate-500 cursor-pointer">
+                            <input type="checkbox" id="use-custom-input" onchange="toggleCustomInput()" class="rounded border-slate-300 text-primary focus:ring-primary/20"/>
+                            自定义输入
+                        </label>
+                        <div class="flex gap-3">
+                            <button id="btn-run" onclick="runCode()"
+                                class="px-6 py-2 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors text-sm font-semibold">
+                                运行
+                            </button>
+                            <button id="btn-submit" onclick="submitCode()"
+                                class="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors text-sm font-bold shadow-sm shadow-primary/20">
+                                提交
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== 添加题目弹窗 ==================== -->
+    <div id="modal-overlay" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm" onclick="closeModal(event)">
+        <div class="bg-white rounded-xl w-[640px] max-w-[90vw] max-h-[85vh] flex flex-col shadow-xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h3 id="modal-title" class="text-base font-bold">添加题目</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
+                <input type="hidden" id="edit-problem-id"/>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">题目标题 *</label>
+                    <input type="text" id="form-title" placeholder="如: 两数之和"
+                        class="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">难度</label>
+                        <select id="form-difficulty" class="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">来源</label>
+                        <input type="text" id="form-source" placeholder="LeetCode #1"
+                            class="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">标签</label>
+                        <input type="text" id="form-tags" placeholder="DP, 数组"
+                            class="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">原题链接</label>
+                    <input type="text" id="form-source-url" placeholder="https://leetcode.cn/problems/..."
+                        class="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">题目描述 (Markdown)</label>
+                    <textarea id="form-description" rows="6" placeholder="在此输入题目描述..."
+                        class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">代码模板 (ACM)</label>
+                    <textarea id="form-template" rows="3" placeholder="def solve():&#10;    pass"
+                        class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">核心代码模板 <span class="normal-case text-slate-400 font-normal">(选填，留空则不显示模式切换)</span></label>
+                    <textarea id="form-lc-template" rows="3" placeholder="def twoSum(nums, target):&#10;    pass"
+                        class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">核心代码适配器 <span class="normal-case text-slate-400 font-normal">(选填，将拼接在用户代码后执行)</span></label>
+                    <textarea id="form-lc-wrapper" rows="3" placeholder="import sys&#10;# 读入数据，调用用户函数，输出结果"
+                        class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+                </div>
+                <!-- Test cases in modal -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">测试用例</label>
+                        <button onclick="addTcFormRow()" class="text-xs font-semibold text-primary hover:text-primary/80">+ 添加</button>
+                    </div>
+                    <div id="form-testcases" class="space-y-2"></div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
+                <button onclick="closeModal()" class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">取消</button>
+                <button onclick="saveProblem()" class="px-6 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 添加测试用例弹窗 (做题页内) ==================== -->
+    <div id="tc-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm" onclick="closeTcModal(event)">
+        <div class="bg-white rounded-xl w-[480px] max-w-[90vw] shadow-xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h3 class="text-base font-bold">添加测试用例</h3>
+                <button onclick="closeTcModal()" class="text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">输入</label>
+                    <textarea id="tc-form-input" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">期望输出</label>
+                    <textarea id="tc-form-output" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
+                <button onclick="closeTcModal()" class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">取消</button>
+                <button onclick="saveTestCase()" class="px-6 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monaco Editor Loader -->
+    <script>
+        var require = { paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
