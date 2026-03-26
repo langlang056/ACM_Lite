@@ -8,7 +8,7 @@
 """
 import random
 from datetime import date, datetime, timedelta
-from database import db_connection, get_problem
+from backend.database import db_connection, get_problem
 
 
 def get_today_problem():

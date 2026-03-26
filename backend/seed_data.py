@@ -1,7 +1,7 @@
 """
 示例题目数据 - 首次运行时自动插入，后续启动自动补充新题
 """
-import database as db
+from backend import database as db
 
 # ==================== LeetCode 模式辅助代码片段 ====================
 

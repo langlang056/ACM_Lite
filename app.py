@@ -3,17 +3,16 @@ ACM Trainer - Flask 后端
 启动: python app.py [-p 端口]
 """
 import os
-import sys
 from dataclasses import asdict
 from flask import Flask, render_template, request, jsonify
 
-sys.path.insert(0, os.path.dirname(__file__))
+from backend import database as db
+from backend.judge import judge
+from backend.daily import get_today_problem, refresh_daily, mark_daily_completed
 
-import database as db
-from judge import judge
-from daily import get_today_problem, refresh_daily, mark_daily_completed
-
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder='frontend/static',
+            template_folder='frontend/templates')
 app.config['JSON_AS_ASCII'] = False
 
 
@@ -239,7 +238,7 @@ if __name__ == '__main__':
 
     db.init_db()
 
-    from seed_data import seed
+    from backend.seed_data import seed
     n = seed()
     if n > 0:
         print(f"  已插入 {n} 道示例题目")

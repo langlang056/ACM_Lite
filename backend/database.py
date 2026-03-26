@@ -7,9 +7,9 @@ import json
 from datetime import datetime
 from contextlib import contextmanager
 
-# 数据库路径: 项目目录下 data/acm_trainer.db
-_BASE_DIR = os.path.dirname(__file__)
-DB_PATH = os.path.join(_BASE_DIR, "data", "acm_trainer.db")
+# 数据库路径: 项目根目录下 data/acm_trainer.db
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
+DB_PATH = os.path.join(_PROJECT_ROOT, "data", "acm_trainer.db")
 
 
 @contextmanager

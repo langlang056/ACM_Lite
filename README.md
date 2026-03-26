@@ -21,29 +21,30 @@ python app.py -p 9000      # 自定义端口
 
 ```
 acm_trainer/
-├── app.py              # Flask 路由层，所有 API 入口
-├── database.py         # 数据层，SQLite 表定义 + CRUD
-├── judge.py            # 判题引擎，subprocess 隔离执行 + 输出比对
-├── daily.py            # 每日一题，四级优先策略智能选题
-├── seed_data.py        # 22 道内置题目数据，启动时增量插入
-├── data/
-│   └── acm_trainer.db  # SQLite 数据库（自动生成，已 gitignore）
-├── static/
-│   └── js/app.js       # 前端单页应用逻辑
-└── templates/
-    └── index.html      # HTML 页面（Tailwind CSS + Monaco Editor）
+├── app.py                      # Flask 入口，所有 API 路由
+├── backend/                    # 后端逻辑
+│   ├── database.py             #   数据层，SQLite 表定义 + CRUD
+│   ├── judge.py                #   判题引擎，subprocess 隔离执行
+│   ├── daily.py                #   每日一题，四级优先策略选题
+│   └── seed_data.py            #   22 道内置题目数据
+├── frontend/                   # 前端资源
+│   ├── static/js/app.js        #   单页应用逻辑
+│   └── templates/index.html    #   HTML 页面 (Tailwind + Monaco)
+├── data/                       # SQLite 数据库（自动生成，已 gitignore）
+├── README.md
+└── .gitignore
 ```
 
 ### 模块职责
 
 | 模块 | 职责 | 依赖 |
 |------|------|------|
-| app.py | HTTP 路由、请求校验、调用下层模块 | database, judge, daily |
-| database.py | 4 张表的 CRUD、统计、导入导出 | 无 |
-| judge.py | 代码执行、超时控制、输出比对 | 无 |
-| daily.py | 智能选题（薄弱题 > 遗忘复习 > 新题 > 随机） | database |
-| seed_data.py | 内置题库数据定义 + 增量插入 | database |
-| app.js | 前端路由、编辑器管理、API 调用、草稿保存 | Monaco, marked.js |
+| app.py | HTTP 路由、请求校验、调用后端模块 | backend.* |
+| backend/database.py | 4 张表的 CRUD、统计、导入导出 | 无 |
+| backend/judge.py | 代码执行、超时控制、输出比对 | 无 |
+| backend/daily.py | 智能选题（薄弱题 > 遗忘复习 > 新题 > 随机） | database |
+| backend/seed_data.py | 内置题库数据定义 + 增量插入 | database |
+| frontend/static/js/app.js | 前端路由、编辑器管理、API 调用、草稿保存 | Monaco, marked.js |
 
 ### 数据库表结构
 
