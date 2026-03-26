@@ -952,6 +952,60 @@ search("app")       -> true
             {"input": "0", "expected_output": "0"},
         ]
     },
+    # ---- 22. 最小的n ----
+    {
+        "title": "最小的n",
+        "difficulty": "Medium",
+        "tags": ["数学", "质因数分解"],
+        "source": "字节跳动面试真题",
+        "source_url": "",
+        "description": """## 题目描述
+
+给定一个正整数 $n$，你可以对这个正整数进行两种操作：
+
+1. 将 $n$ 乘以任意一个正整数
+2. 将 $n$ 开方变成 $\\sqrt{n}$，注意如果要执行开方操作，$n$ 必须是完全平方数
+
+你可以执行上述两个操作任意多次，求可能得到的最小的 $n$ 是多少？若实现最小的 $n$，最少需要执行几次操作？
+
+输出两个整数，分别为最小值和最少操作次数，空格分隔。
+
+### 示例
+
+```
+输入: 256
+输出: 2 3
+解释: 256=2^8 → sqrt→16=2^4 → sqrt→4=2^2 → sqrt→2   (3 次开方)
+```
+
+```
+输入: 72
+输出: 6 3
+解释: 72=2^3*3^2 → *18→1296=2^4*3^4 → sqrt→36=2^2*3^2 → sqrt→6   (1 次乘法 + 2 次开方)
+```
+
+### 约束
+
+- `1 <= n <= 10^9`
+
+### 提示
+
+1. 对 n 做质因数分解，最小值 = 各质因子的乘积（无平方因子核）
+2. 设最大指数为 e_max，需要 k = ceil(log2(e_max)) 次开方
+3. 如果所有指数恰好都等于 2^k，则不需要乘法操作，总次数 = k；否则需要 1 次乘法将所有指数补齐到 2^k，总次数 = k + 1
+""",
+        "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    # 输出最小值和最少操作次数\n    pass\n\nsolve()\n",
+        "lc_template": "def minN(n):\n    # 返回 (最小值, 最少操作次数)\n    pass\n",
+        "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nval, ops = minN(n)\nprint(val, ops)\n",
+        "test_cases": [
+            {"input": "256", "expected_output": "2 3"},
+            {"input": "72", "expected_output": "6 3"},
+            {"input": "36", "expected_output": "6 1"},
+            {"input": "12", "expected_output": "6 2"},
+            {"input": "1", "expected_output": "1 0"},
+            {"input": "7", "expected_output": "7 0"},
+        ]
+    },
 ]
 
 
@@ -979,6 +1033,7 @@ _INPUT_FMT = {
     "实现前缀树":           "{2..}",
     "寻找峰值":             "nums = {2[]}",
     "最长连续序列":         "nums = {2[]}",
+    "最小的n":              "n = {1}",
 }
 
 # 将格式模板注入到题目数据中

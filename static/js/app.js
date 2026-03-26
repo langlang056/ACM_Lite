@@ -1,14 +1,43 @@
 /**
- * ACM Lite - 前端交互逻辑 (精简版)
+ * ACM Lite - 前端交互逻辑
  */
 
 let editor = null;
 let currentProblem = null;
 let currentMode = 'acm';
 let savedCode = { acm: '', core: '' };
+let _draftTimer = null; // 草稿自动保存定时器
+
+// ==================== 草稿自动保存 ====================
+function draftKey(pid, mode) { return `draft_${pid}_${mode}`; }
+
+function saveDraft() {
+    if (!currentProblem || !editor) return;
+    const code = editor.getValue();
+    const tmpl = currentMode === 'core' ? (currentProblem.lc_template || '') : (currentProblem.template_code || '');
+    // 内容与模板相同则不存草稿
+    if (code === tmpl) { localStorage.removeItem(draftKey(currentProblem.id, currentMode)); return; }
+    localStorage.setItem(draftKey(currentProblem.id, currentMode), code);
+}
+
+function loadDraft(pid, mode) {
+    return localStorage.getItem(draftKey(pid, mode)) || '';
+}
+
+function clearDraft(pid, mode) {
+    localStorage.removeItem(draftKey(pid, mode));
+}
+
+function scheduleDraftSave() {
+    clearTimeout(_draftTimer);
+    _draftTimer = setTimeout(saveDraft, 1000);
+}
 
 // ==================== 页面路由 ====================
 function navigate(page, data) {
+    // 离开做题页前保存草稿
+    if (currentProblem && editor) saveDraft();
+
     document.querySelectorAll('.page').forEach(p => { p.classList.add('hidden'); p.classList.remove('block'); });
     const el = document.getElementById('page-' + page);
     if (el) { el.classList.remove('hidden'); el.classList.add('block'); }
@@ -32,11 +61,18 @@ async function loadDaily() {
         if (!res.ok) { container.innerHTML = '<div class="text-sm text-slate-400">题库为空，请先添加题目</div>'; return; }
         const data = await res.json();
         const p = data.problem;
+        const done = data.is_completed;
         const diffColor = { Easy: 'bg-green-100 text-green-700', Medium: 'bg-primary/10 text-primary', Hard: 'bg-red-100 text-red-700' };
+        // 已完成时卡片左边框变绿
+        container.className = container.className.replace(/border-green-400|border-l-4/g, '').trim();
+        if (done) container.className += ' border-l-4 border-green-400';
         container.innerHTML = `
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div class="space-y-3">
-                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${diffColor[p.difficulty] || ''}">${p.difficulty}</div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${diffColor[p.difficulty] || ''}">${p.difficulty}</span>
+                        ${done ? '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"><span class="material-symbols-outlined text-[14px]">check_circle</span>已完成</span>' : ''}
+                    </div>
                     <h3 class="text-2xl font-bold tracking-tight">${esc(p.title)}</h3>
                     <p class="text-slate-500 max-w-md text-sm">${esc((p.tags || []).join(' · '))}${p.source ? ' · ' + esc(p.source) : ''}</p>
                 </div>
@@ -45,7 +81,7 @@ async function loadDaily() {
                         <span class="material-symbols-outlined text-[18px]">refresh</span>
                     </button>
                     <button onclick="navigate('solve', ${p.id})" class="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-primary text-white font-semibold text-sm transition-all hover:bg-primary/90 focus:ring-4 focus:ring-primary/20">
-                        开始做题
+                        ${done ? '查看题目' : '开始做题'}
                     </button>
                 </div>
             </div>`;
@@ -88,7 +124,7 @@ async function loadStats() {
                 <span class="material-symbols-outlined text-primary text-sm">bar_chart</span>
                 <p class="text-xs font-medium text-slate-400">难度分布</p>
             </div>
-            <p class="text-xs text-slate-600 mt-1 leading-relaxed">E: ${s.difficulty_counts?.Easy||0} · M: ${s.difficulty_counts?.Medium||0} · H: ${s.difficulty_counts?.Hard||0}</p>
+            ${renderDiffBar(s)}
         </div>`;
 }
 
@@ -98,12 +134,19 @@ async function loadProblems() { filterProblems(); }
 async function filterProblems() {
     const keyword = document.getElementById('search-input').value;
     const difficulty = document.getElementById('filter-difficulty').value;
+    const sortOrder = document.getElementById('sort-order').value;
     const params = new URLSearchParams();
     if (keyword) params.set('keyword', keyword);
     if (difficulty) params.set('difficulty', difficulty);
 
     const res = await fetch('/api/problems?' + params);
-    const problems = await res.json();
+    let problems = await res.json();
+
+    // 前端排序
+    if (sortOrder === 'id_asc') problems.sort((a, b) => a.id - b.id);
+    else if (sortOrder === 'status') problems.sort((a, b) => (a.best_status === 'Accepted' ? 1 : 0) - (b.best_status === 'Accepted' ? 1 : 0));
+    // id_desc 是默认顺序，无需排序
+
     renderProblems(problems);
 }
 
@@ -114,9 +157,28 @@ function renderProblems(problems) {
         return;
     }
 
+    // 按来源分为真题和 LeetCode 两组
+    const isReal = p => p.source && !p.source.startsWith('LeetCode');
+    const realProblems = problems.filter(isReal);
+    const lcProblems = problems.filter(p => !isReal(p));
+
+    container.innerHTML =
+        renderGroup('面试真题', 'work', 'border-l-orange-500 bg-orange-50/40', realProblems) +
+        renderGroup('LeetCode 原题', 'code', 'border-l-blue-500 bg-blue-50/40', lcProblems);
+}
+
+function renderGroup(title, icon, borderClass, problems) {
+    if (!problems.length) return '';
     const diffColor = { Easy: 'bg-green-100 text-green-700', Medium: 'bg-amber-100 text-amber-700', Hard: 'bg-red-100 text-red-700' };
 
-    container.innerHTML = problems.map(p => {
+    const header = `
+        <div class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 ${borderClass} mb-3 mt-6 first:mt-0">
+            <span class="material-symbols-outlined text-[20px]">${icon}</span>
+            <span class="font-bold text-sm">${title}</span>
+            <span class="text-xs text-slate-400 font-medium">${problems.length} 题</span>
+        </div>`;
+
+    const cards = problems.map(p => {
         const statusIcon = p.best_status === 'Accepted'
             ? '<span class="material-symbols-outlined text-green-500 text-[18px]">check_circle</span>'
             : p.best_status
@@ -147,6 +209,8 @@ function renderProblems(problems) {
             </div>
         </div>`;
     }).join('');
+
+    return header + cards;
 }
 
 // ==================== 做题页 ====================
@@ -167,9 +231,6 @@ async function loadProblem(pid) {
 
     // Description
     document.getElementById('solve-description').innerHTML = marked.parse(p.description || '暂无题目描述');
-
-    // Test cases
-    renderTestCases(p.test_cases || []);
 
     // Source tags
     const srcEl = document.getElementById('solve-source-tags');
@@ -200,7 +261,12 @@ async function loadProblem(pid) {
     savedCode = { acm: '', core: '' };
     if (lastCode) savedCode[currentMode] = lastCode;
     updateModeUI();
-    initEditor(lastCode || (currentMode === 'core' ? (p.lc_template || '') : (p.template_code || getDefaultTemplate())));
+    renderTestCases(p.test_cases || []);
+
+    // 优先级：localStorage 草稿 > 上次提交 > 模板
+    const draft = loadDraft(p.id, currentMode);
+    const initialCode = draft || lastCode || (currentMode === 'core' ? (p.lc_template || '') : (p.template_code || getDefaultTemplate()));
+    initEditor(initialCode);
 
     // Reset result panel & custom input
     document.getElementById('result-panel').classList.add('hidden');
@@ -220,8 +286,8 @@ function renderTestCases(cases) {
             <div class="bg-slate-50 border border-slate-100 p-4 rounded-lg text-sm space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-400 uppercase">样例 ${i+1}</span>
-                    <button onclick="deleteTestCase(${tc.id})" class="text-slate-300 hover:text-red-500 transition-colors">
-                        <span class="material-symbols-outlined text-[14px]">close</span>
+                    <button onclick="deleteTestCase(${tc.id})" class="text-slate-300 hover:text-red-400 transition-colors" title="删除">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
                     </button>
                 </div>
                 <div>
@@ -240,8 +306,8 @@ function renderTestCases(cases) {
             <div class="bg-slate-50 border border-slate-100 p-4 rounded-lg font-mono text-sm space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-400 uppercase">用例 ${i+1}</span>
-                    <button onclick="deleteTestCase(${tc.id})" class="text-slate-300 hover:text-red-500 transition-colors">
-                        <span class="material-symbols-outlined text-[14px]">close</span>
+                    <button onclick="deleteTestCase(${tc.id})" class="text-slate-300 hover:text-red-400 transition-colors" title="删除">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
                     </button>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -299,6 +365,8 @@ function initEditor(code) {
         });
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => runCode());
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => submitCode());
+        // 编辑时自动保存草稿
+        editor.onDidChangeModelContent(() => scheduleDraftSave());
     });
 }
 
@@ -310,6 +378,7 @@ function resetCode() {
         : (currentProblem.template_code || getDefaultTemplate());
     editor.setValue(tmpl);
     savedCode[currentMode] = '';
+    clearDraft(currentProblem.id, currentMode);
 }
 
 // ==================== 运行 & 提交 ====================
@@ -339,8 +408,11 @@ async function submitCode() {
         const subs = await subRes.json();
         const acCount = subs.filter(s => s.status === 'Accepted').length;
         document.getElementById('solve-submission-count').textContent = `${acCount} AC / ${subs.length} 次提交`;
-        // AC 时显示通过提示
-        if (result.status === 'Accepted') showAcceptedBanner();
+        // AC 时清除草稿并显示通过提示
+        if (result.status === 'Accepted') {
+            clearDraft(currentProblem.id, currentMode);
+            showAcceptedBanner();
+        }
     } catch(e) { alert('提交出错: ' + e.message); }
     finally { btn.disabled = false; btn.textContent = '提交'; }
 }
@@ -383,8 +455,8 @@ function showResult(result) {
                 <span class="text-slate-300">${c.time_ms.toFixed(1)}ms</span>
             </div>
             ${showDiff ? `<div class="grid grid-cols-2 gap-2 mt-2 font-mono">
-                <div><p class="text-[10px] text-slate-400 uppercase mb-0.5">期望</p><pre class="whitespace-pre-wrap text-slate-600">${esc((c.expected||'').substring(0,300))}</pre></div>
-                <div><p class="text-[10px] text-slate-400 uppercase mb-0.5">${c.error?'错误':'实际'}</p><pre class="whitespace-pre-wrap text-slate-600">${esc((c.error||c.actual||'').substring(0,300))}</pre></div>
+                <div><p class="text-[10px] text-slate-400 uppercase mb-0.5">期望</p>${expandablePre(c.expected||'')}</div>
+                <div><p class="text-[10px] text-slate-400 uppercase mb-0.5">${c.error?'错误':'实际'}</p>${expandablePre(c.error||c.actual||'')}</div>
             </div>` : ''}
         </div>`;
     }).join('');
@@ -413,20 +485,17 @@ function updateCustomInputHint() {
 // ==================== 做题模式切换 ====================
 function switchMode(mode) {
     if (mode === currentMode || !currentProblem) return;
-    if (editor) savedCode[currentMode] = editor.getValue();
+    if (editor) { savedCode[currentMode] = editor.getValue(); saveDraft(); }
     currentMode = mode;
     updateModeUI();
-    // 切换模式时重新渲染测试用例显示
     renderTestCases(currentProblem.test_cases || []);
     if (editor) {
-        if (savedCode[mode]) {
-            editor.setValue(savedCode[mode]);
-        } else {
-            const tmpl = mode === 'core'
-                ? (currentProblem.lc_template || '# 该题暂无核心代码模板\n')
-                : (currentProblem.template_code || getDefaultTemplate());
-            editor.setValue(tmpl);
-        }
+        // 优先级：内存缓存 > localStorage 草稿 > 上次提交的代码由 loadProblem 已存 > 模板
+        const draft = loadDraft(currentProblem.id, mode);
+        const code = savedCode[mode] || draft || (mode === 'core'
+            ? (currentProblem.lc_template || '# 该题暂无核心代码模板\n')
+            : (currentProblem.template_code || getDefaultTemplate()));
+        editor.setValue(code);
     }
 }
 
@@ -533,11 +602,42 @@ async function deleteProblem(pid, title) {
     loadHome();
 }
 
-function closeModal(e) { if(!e||e.target===e.currentTarget) document.getElementById('modal-overlay').classList.add('hidden'); }
+function closeModal(e) {
+    // 点击背景关闭时，检查表单是否有内容
+    if (e && e.target !== e.currentTarget) return;
+    if (e && modalHasContent() && !confirm('表单内容尚未保存，确定关闭？')) return;
+    document.getElementById('modal-overlay').classList.add('hidden');
+}
+function modalHasContent() {
+    return !!(document.getElementById('form-title').value.trim() || document.getElementById('form-description').value.trim());
+}
 
 // ==================== 弹窗: 添加测试用例 ====================
-function showAddTcModal() { document.getElementById('tc-form-input').value=''; document.getElementById('tc-form-output').value=''; document.getElementById('tc-modal').classList.remove('hidden'); }
-function closeTcModal(e) { if(!e||e.target===e.currentTarget) document.getElementById('tc-modal').classList.add('hidden'); }
+function showAddTcModal() {
+    document.getElementById('tc-form-input').value = '';
+    document.getElementById('tc-form-output').value = '';
+    // 根据当前题目的已有用例生成格式提示
+    const hint = document.getElementById('tc-format-hint');
+    const tc = (currentProblem?.test_cases || [])[0];
+    if (tc) {
+        const inputLines = tc.input.split('\n');
+        const numbered = inputLines.map(l => `<code class="bg-white px-1 rounded">${esc(l)}</code>`).join('<br>');
+        hint.innerHTML = `
+            <p class="font-semibold text-slate-600">输入格式参考（参照已有用例）:</p>
+            <div class="font-mono mt-1">${numbered}</div>
+            <p class="mt-1.5">对应输出: <code class="bg-white px-1 rounded font-mono">${esc(tc.expected_output)}</code></p>
+            <p class="mt-1.5 text-slate-400">按相同格式填写新的测试数据即可。每行对应一组输入参数。</p>`;
+        hint.classList.remove('hidden');
+    } else {
+        hint.innerHTML = `<p class="text-slate-400">该题暂无已有用例可参考，请按 ACM 格式填写：每行一组数据，通过标准输入读取。</p>`;
+        hint.classList.remove('hidden');
+    }
+    document.getElementById('tc-modal').classList.remove('hidden');
+}
+function closeTcModal(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('tc-modal').classList.add('hidden');
+}
 
 async function saveTestCase() {
     if (!currentProblem) return;
@@ -578,6 +678,36 @@ async function importProblems(e) {
 // ==================== 工具 ====================
 function esc(s) { if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+/** 可展开的 pre 块：超过 200 字符时截断并提供展开按钮 */
+function expandablePre(text, limit = 200) {
+    if (text.length <= limit) return `<pre class="whitespace-pre-wrap text-slate-600">${esc(text)}</pre>`;
+    const id = 'exp_' + Math.random().toString(36).slice(2, 8);
+    return `<pre id="${id}" class="whitespace-pre-wrap text-slate-600">${esc(text.substring(0, limit))}…</pre>
+        <button onclick="document.getElementById('${id}').textContent=decodeURIComponent('${encodeURIComponent(text)}');this.remove()"
+            class="text-primary text-[10px] hover:underline mt-0.5">展开全部</button>`;
+}
+
+/** 难度分布 AC 进度条 */
+function renderDiffBar(s) {
+    const levels = [
+        { key: 'Easy', label: 'E', color: 'bg-green-400', bg: 'bg-green-100' },
+        { key: 'Medium', label: 'M', color: 'bg-amber-400', bg: 'bg-amber-100' },
+        { key: 'Hard', label: 'H', color: 'bg-red-400', bg: 'bg-red-100' },
+    ];
+    return levels.map(l => {
+        const total = s.difficulty_counts?.[l.key] || 0;
+        const ac = s.ac_by_difficulty?.[l.key] || 0;
+        const pct = total > 0 ? Math.round(ac / total * 100) : 0;
+        return `<div class="flex items-center gap-2 mt-1">
+            <span class="text-[10px] text-slate-500 w-3 font-bold">${l.label}</span>
+            <div class="flex-1 h-1.5 ${l.bg} rounded-full overflow-hidden">
+                <div class="${l.color} h-full rounded-full transition-all" style="width:${pct}%"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 w-8 text-right">${ac}/${total}</span>
+        </div>`;
+    }).join('');
+}
+
 /**
  * 核心代码模式：将原始输入按格式模板转为可读参数
  * 语法: {N} 整行, {N:M} 第N行第M个token, {N[]} 格式化为数组, {N..} 第N行起全部, {N..mat} 每行作为子数组
@@ -585,7 +715,7 @@ function esc(s) { if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,
 function fmtCoreInput(raw, fmt) {
     if (!fmt) return raw;
     const L = raw.trim().split('\n').map(l => l.trim());
-    return fmt.replace(/\{(\d+)(\.\.(?:mat)?)?(\[\])?(?::(\d+))?\}/g, (m, n, range, arr, tok) => {
+    return fmt.replace(/\{(\d+)(\.\.(?:mat)?)?(\[\])?(?::(\d+))?\}/g, (_, n, range, arr, tok) => {
         const idx = parseInt(n) - 1;
         if (range) {
             const rest = L.slice(idx);
@@ -601,4 +731,17 @@ function fmtCoreInput(raw, fmt) {
 }
 
 // ==================== 初始化 ====================
-document.addEventListener('DOMContentLoaded', () => navigate('home'));
+document.addEventListener('DOMContentLoaded', () => {
+    navigate('home');
+    // Escape 关闭弹窗
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('modal-overlay');
+            const tcModal = document.getElementById('tc-modal');
+            if (!tcModal.classList.contains('hidden')) { closeTcModal(); return; }
+            if (!modal.classList.contains('hidden')) { closeModal(); }
+        }
+    });
+    // 页面关闭前保存草稿
+    window.addEventListener('beforeunload', saveDraft);
+});
