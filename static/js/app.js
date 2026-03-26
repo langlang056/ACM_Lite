@@ -2,11 +2,19 @@
  * ACM Lite - 前端交互逻辑
  */
 
+// ==================== 全局状态 ====================
 let editor = null;
 let currentProblem = null;
-let currentMode = 'acm';
+let currentMode = 'acm';       // 'acm' | 'core'
 let savedCode = { acm: '', core: '' };
-let _draftTimer = null; // 草稿自动保存定时器
+let _draftTimer = null;
+
+// 难度对应的样式（全局复用）
+const DIFF_STYLE = {
+    Easy:   'bg-green-100 text-green-700',
+    Medium: 'bg-amber-100 text-amber-700',
+    Hard:   'bg-red-100 text-red-700',
+};
 
 // ==================== 草稿自动保存 ====================
 function draftKey(pid, mode) { return `draft_${pid}_${mode}`; }
@@ -62,7 +70,7 @@ async function loadDaily() {
         const data = await res.json();
         const p = data.problem;
         const done = data.is_completed;
-        const diffColor = { Easy: 'bg-green-100 text-green-700', Medium: 'bg-primary/10 text-primary', Hard: 'bg-red-100 text-red-700' };
+        const diffColor = DIFF_STYLE;
         // 已完成时卡片左边框变绿
         container.className = container.className.replace(/border-green-400|border-l-4/g, '').trim();
         if (done) container.className += ' border-l-4 border-green-400';
@@ -169,7 +177,7 @@ function renderProblems(problems) {
 
 function renderGroup(title, icon, borderClass, problems) {
     if (!problems.length) return '';
-    const diffColor = { Easy: 'bg-green-100 text-green-700', Medium: 'bg-amber-100 text-amber-700', Hard: 'bg-red-100 text-red-700' };
+    const diffColor = DIFF_STYLE;
 
     const header = `
         <div class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 ${borderClass} mb-3 mt-6 first:mt-0">
@@ -222,7 +230,7 @@ async function loadProblem(pid) {
     document.getElementById('solve-title').textContent = `${p.id}. ${p.title}`;
 
     // Meta
-    const diffColor = { Easy: 'bg-green-100 text-green-700', Medium: 'bg-primary/10 text-primary', Hard: 'bg-red-100 text-red-700' };
+    const diffColor = DIFF_STYLE;
     const tagsHtml = (p.tags||[]).map(t => `<span class="text-slate-500 text-sm">${esc(t)}</span>`).join('<span class="text-slate-300">·</span>');
     document.getElementById('solve-meta').innerHTML = `
         <span class="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${diffColor[p.difficulty]||''}">${p.difficulty}</span>

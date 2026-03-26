@@ -17,12 +17,28 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 
-def _get_wrapper(pid, mode):
-    """核心代码模式下获取适配器代码"""
-    if mode != 'core':
-        return ''
-    problem = db.get_problem(pid)
-    return problem.get('lc_wrapper', '') if problem else ''
+# ==================== 内部工具 ====================
+
+def _run_judge(pid, code, mode, custom_input=None, timeout=5.0):
+    """统一判题入口：处理验证、包装和执行"""
+    if not code.strip():
+        return None, ('代码不能为空', 400)
+
+    if custom_input is not None:
+        test_cases = [{'id': 0, 'input': custom_input, 'expected_output': ''}]
+    else:
+        test_cases = db.get_test_cases(pid)
+        if not test_cases:
+            return None, ('该题没有测试用例', 400)
+
+    # 核心代码模式：拼接适配器
+    lc_wrapper = ''
+    if mode == 'core':
+        p = db.get_problem(pid)
+        lc_wrapper = p.get('lc_wrapper', '') if p else ''
+
+    result = judge(code, test_cases, timeout=timeout, mode=mode, lc_wrapper=lc_wrapper)
+    return result, None
 
 
 # ==================== 页面 ====================
@@ -60,8 +76,7 @@ def api_create_problem():
         template_code=data.get('template_code', ''),
     )
     for tc in data.get('test_cases', []):
-        db.add_test_case(pid, tc.get('input', ''), tc.get('expected_output', ''),
-                         tc.get('is_sample', True))
+        db.add_test_case(pid, tc.get('input', ''), tc.get('expected_output', ''))
     return jsonify({'id': pid, 'message': '题目创建成功'})
 
 
@@ -100,8 +115,7 @@ def api_add_testcase(pid):
     if isinstance(data, list):
         db.batch_add_test_cases(pid, data)
         return jsonify({'message': f'批量添加 {len(data)} 个用例'})
-    tc_id = db.add_test_case(pid, data.get('input', ''), data.get('expected_output', ''),
-                              data.get('is_sample', True))
+    tc_id = db.add_test_case(pid, data.get('input', ''), data.get('expected_output', ''))
     return jsonify({'id': tc_id, 'message': '添加成功'})
 
 
@@ -121,20 +135,13 @@ def api_delete_testcase(tc_id):
 
 @app.route('/api/submit/<int:pid>', methods=['POST'])
 def api_submit(pid):
-    """正式提交：判题并保存记录"""
+    """正式提交：判题 + 保存记录"""
     data = request.json
-    code = data.get('code', '')
-    mode = data.get('mode', 'acm')
+    code, mode = data.get('code', ''), data.get('mode', 'acm')
 
-    if not code.strip():
-        return jsonify({'error': '代码不能为空'}), 400
-
-    test_cases = db.get_test_cases(pid)
-    if not test_cases:
-        return jsonify({'error': '该题没有测试用例'}), 400
-
-    result = judge(code, test_cases, timeout=data.get('timeout', 5.0),
-                   mode=mode, lc_wrapper=_get_wrapper(pid, mode))
+    result, err = _run_judge(pid, code, mode, timeout=data.get('timeout', 5.0))
+    if err:
+        return jsonify({'error': err[0]}), err[1]
 
     db.create_submission(
         problem_id=pid, code=code, status=result.status,
@@ -149,22 +156,13 @@ def api_submit(pid):
 def api_run(pid):
     """调试运行：不保存记录"""
     data = request.json
-    code = data.get('code', '')
-    custom_input = data.get('custom_input')
-    mode = data.get('mode', 'acm')
+    code, mode = data.get('code', ''), data.get('mode', 'acm')
 
-    if not code.strip():
-        return jsonify({'error': '代码不能为空'}), 400
-
-    if custom_input is not None:
-        test_cases = [{'id': 0, 'input': custom_input, 'expected_output': ''}]
-    else:
-        test_cases = db.get_test_cases(pid)
-        if not test_cases:
-            return jsonify({'error': '该题没有测试用例'}), 400
-
-    result = judge(code, test_cases, timeout=data.get('timeout', 5.0),
-                   mode=mode, lc_wrapper=_get_wrapper(pid, mode))
+    result, err = _run_judge(pid, code, mode,
+                             custom_input=data.get('custom_input'),
+                             timeout=data.get('timeout', 5.0))
+    if err:
+        return jsonify({'error': err[0]}), err[1]
     return jsonify(asdict(result))
 
 
