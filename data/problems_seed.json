@@ -871,5 +871,92 @@
         "expected_output": "18"
       }
     ]
+  },
+  {
+    "title": "圣诞老人分糖果",
+    "difficulty": "Medium",
+    "tags": [
+      "贪心",
+      "数学"
+    ],
+    "source": "阿里巴巴 2026春招",
+    "source_url": "",
+    "description": "## 题目描述\n\n圣诞老人有 n 种糖果，第 i 种糖果有 c_i 个。他要把这些糖果分给 k 个小朋友。分配规则如下：\n\n- 每一种糖果必须全部分完；\n- 对于任意一种糖果，任意两个小朋友所分得的该种糖果的数量之差不超过 1。\n\n在所有合法分配中，任选一个小朋友，统计其最终得到的糖果总数；求该数值在所有合法分配中可能达到的最小值与最大值。\n\n### 输入描述\n\n第一行输入一个整数 T（1 ≤ T ≤ 2×10^5）代表数据组数。每组数据：\n- 第一行输入两个整数 n, k（1 ≤ n ≤ 2×10^5, 1 ≤ k ≤ 10^9）；\n- 第二行输入 n 个整数 c_1, ..., c_n（0 ≤ c_i ≤ 10^9）。\n\n保证单个测试文件的 n 之和不超过 5×10^5。\n\n### 输出描述\n\n对于每组测试数据，输出两个整数：单个小朋友可能得到的糖果总数的最小值与最大值。\n\n### 示例\n\n```\n输入:\n3\n2 2\n3 3\n1 3\n7\n3 2\n1 1 1\n\n输出:\n2 4\n2 3\n0 3\n```\n\n### 解题思路\n\n对于每种糖果 i，每个小朋友分得 floor(c_i/k) 或 ceil(c_i/k) 个。各种糖果的分配互相独立，因此：\n- 最小值 = sum(floor(c_i/k))，让目标小朋友每种糖果都取 floor\n- 最大值 = sum(floor(c_i/k)) + count(c_i % k > 0)，让目标小朋友在有余数的类型都取 ceil\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    T = int(input())\n    for _ in range(T):\n        n, k = map(int, input().split())\n        c = list(map(int, input().split()))\n        min_val = sum(ci // k for ci in c)\n        max_val = min_val + sum(1 for ci in c if ci % k > 0)\n        print(min_val, max_val)\n\nsolve()\n",
+    "lc_template": "",
+    "lc_wrapper": "",
+    "test_cases": [
+      {
+        "input": "3\n2 2\n3 3\n1 3\n7\n3 2\n1 1 1",
+        "expected_output": "2 4\n2 3\n0 3"
+      },
+      {
+        "input": "2\n2 3\n0 6\n1 1\n1000000000",
+        "expected_output": "2 2\n1000000000 1000000000"
+      },
+      {
+        "input": "1\n3 5\n10 7 3",
+        "expected_output": "3 5"
+      }
+    ],
+    "lc_input_fmt": ""
+  },
+  {
+    "title": "字典序最大公共子序列",
+    "difficulty": "Medium",
+    "tags": [
+      "贪心",
+      "排列"
+    ],
+    "source": "阿里巴巴 2026春招",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定两个长度为 n 的排列 p 和 q（均为 1 ~ n 的一个排列，元素两两不同），请你在它们的公共子序列中，找到一条**字典序最大**的序列并输出。\n\n### 名词解释\n\n- **字典序**：对两个序列从左到右比较第一个不同的元素，较大者字典序更大；若一个序列是另一个的前缀，则更长的序列字典序更大。\n- **子序列**：从原序列中删除任意个（可以为零、可以为全部）元素得到的新序列。\n- **公共子序列**：如果数组 a 的一个子序列 a' 与数组 b 的一个子序列 b' 完全相等，那么子序列 a', b' 是数组 a, b 的一个公共子序列。\n\n### 输入描述\n\n- 第一行输入一个整数 n（1 ≤ n ≤ 2×10^5），表示排列的长度。\n- 第二行输入 n 个整数 p_1, p_2, ..., p_n，表示排列 p。\n- 第三行输入 n 个整数 q_1, q_2, ..., q_n，表示排列 q。\n\n保证 p 与 q 都是 1 ~ n 的排列。\n\n### 输出描述\n\n- 第一行输出一个整数 k，表示答案序列的长度。\n- 第二行输出 k 个整数，为这条字典序最大的公共子序列。\n\n### 示例\n\n```\n输入:\n5\n2 5 3 1 4\n5 2 4 3 1\n\n输出:\n2\n5 4\n```\n\n### 解题思路\n\n贪心：从 n 到 1 依次尝试每个值，如果该值在两个排列中的位置都 ≥ 当前指针位置，就将其加入结果，并更新两个指针。由于优先选大值，保证了字典序最大。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    p = list(map(int, input().split()))\n    q = list(map(int, input().split()))\n    pos_p = [0] * (n + 1)\n    pos_q = [0] * (n + 1)\n    for i in range(n):\n        pos_p[p[i]] = i\n        pos_q[q[i]] = i\n    result = []\n    cp, cq = 0, 0\n    for v in range(n, 0, -1):\n        if pos_p[v] >= cp and pos_q[v] >= cq:\n            result.append(v)\n            cp = pos_p[v] + 1\n            cq = pos_q[v] + 1\n    print(len(result))\n    print(*result)\n\nsolve()\n",
+    "lc_template": "",
+    "lc_wrapper": "",
+    "test_cases": [
+      {
+        "input": "5\n2 5 3 1 4\n5 2 4 3 1",
+        "expected_output": "2\n5 4"
+      },
+      {
+        "input": "3\n1 2 3\n1 2 3",
+        "expected_output": "1\n3"
+      },
+      {
+        "input": "4\n3 1 4 2\n4 2 3 1",
+        "expected_output": "2\n4 2"
+      },
+      {
+        "input": "6\n3 5 1 6 2 4\n5 3 6 1 4 2",
+        "expected_output": "2\n6 4"
+      }
+    ],
+    "lc_input_fmt": ""
+  },
+  {
+    "title": "三星数字",
+    "difficulty": "Hard",
+    "tags": [
+      "二分查找",
+      "数位DP"
+    ],
+    "source": "阿里巴巴 2026春招",
+    "source_url": "",
+    "description": "## 题目描述\n\nTk 不喜欢能被 3 整除的正整数，也不喜欢十进制表示中包含数字 '3' 的正整数。\n\n现在他要将所有他喜欢的正整数按升序排成一个序列。给定正整数 k，请你找出这个序列的第 k 个数。\n\n友情提醒：第 10^18 + 1 项为 10 995 467 216 611 448 857。\n\n### 输入描述\n\n- 第一行输入一个整数 t（1 ≤ t ≤ 10^4），表示测试用例的数量。\n- 接下来 t 行，每行输入一个整数 k（1 ≤ k ≤ 10^18），表示要找的第 k 个喜欢的正整数的序号。\n\n### 输出描述\n\n对于每个测试用例，在一行上输出一个整数，表示所求的第 k 个喜欢的正整数。\n\n### 示例\n\n```\n输入:\n5\n1\n2\n3\n4\n5\n\n输出:\n1\n2\n4\n5\n7\n```\n\n### 解题思路\n\n二分查找 + 数位 DP。二分答案 mid，用数位 DP 计算 [1, mid] 中满足条件（不含数字 3 且不被 3 整除）的数的个数，找到恰好为 k 的最小 mid。\n\n数位 DP 状态：当前位、是否紧贴上界、当前数字之和对 3 的余数、是否已开始（前导零处理）。\n",
+    "template_code": "import sys\nfrom functools import lru_cache\ninput = sys.stdin.readline\n\ndef count_liked(n):\n    \"\"\"计算 [1, n] 中不含数字3且不被3整除的正整数个数\"\"\"\n    if n <= 0:\n        return 0\n    digits = list(map(int, str(n)))\n    L = len(digits)\n    \n    @lru_cache(maxsize=None)\n    def dp(pos, tight, mod, started):\n        if pos == L:\n            return 1 if started and mod != 0 else 0\n        limit = digits[pos] if tight else 9\n        res = 0\n        for d in range(0, limit + 1):\n            if d == 3:\n                continue\n            new_started = started or d > 0\n            new_mod = (mod + d) % 3 if new_started else 0\n            res += dp(pos + 1, tight and d == limit, new_mod, new_started)\n        return res\n    \n    return dp(0, True, 0, False)\n\ndef solve():\n    t = int(input())\n    for _ in range(t):\n        k = int(input())\n        lo, hi = 1, 2 * 10**18\n        while lo < hi:\n            mid = (lo + hi) // 2\n            if count_liked(mid) >= k:\n                hi = mid\n            else:\n                lo = mid + 1\n        count_liked.cache_clear()\n        print(lo)\n\nsolve()\n",
+    "lc_template": "",
+    "lc_wrapper": "",
+    "test_cases": [
+      {
+        "input": "5\n1\n2\n3\n4\n5",
+        "expected_output": "1\n2\n4\n5\n7"
+      },
+      {
+        "input": "3\n10\n100\n1000",
+        "expected_output": "16\n185\n2056"
+      }
+    ],
+    "lc_input_fmt": ""
   }
 ]

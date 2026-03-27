@@ -13,7 +13,7 @@ python app.py              # 默认 8080 端口
 python app.py -p 9000      # 自定义端口
 ```
 
-启动后访问 `http://localhost:8080`。首次启动自动建库并导入 29 道内置题目（22 道 LeetCode 经典题 + 7 道阿里巴巴笔试真题）。
+启动后访问 `http://localhost:8080`。首次启动自动建库并导入 32 道内置题目（22 道 LeetCode 经典题 + 10 道阿里巴巴笔试真题）。
 
 ---
 
@@ -36,7 +36,7 @@ acm_trainer/
 │   └── templates/index.html        #   HTML 页面 (Tailwind + Monaco)
 ├── data/                           # 运行时数据（已 gitignore）
 │   ├── acm_trainer.db              #   SQLite 数据库（自动生成）
-│   └── problems_seed.json          #   29 道内置题目（22 LeetCode + 7 阿里真题）
+│   └── problems_seed.json          #   32 道内置题目（22 LeetCode + 10 阿里真题）
 ├── README.md
 └── .gitignore
 ```
@@ -70,7 +70,7 @@ acm_trainer/
 
 涵盖数组、链表、树、动态规划、贪心、设计类等常见考点。
 
-### 阿里巴巴笔试真题（7 道）
+### 阿里巴巴笔试真题（10 道）
 
 | 题目 | 难度 | 标签 | 来源 |
 |------|------|------|------|
@@ -81,6 +81,9 @@ acm_trainer/
 | 矩阵聚光灯得分 | Medium | 前缀和、矩阵 | 2022笔试 |
 | 十六进制转二进制计1 | Easy | 位运算 | 2022/2023笔试 |
 | 三元组差值统计 | Medium | 哈希表、组合数学 | 2023笔试 |
+| 圣诞老人分糖果 | Medium | 贪心、数学 | 2026春招 |
+| 字典序最大公共子序列 | Medium | 贪心、排列 | 2026春招 |
+| 三星数字 | Hard | 二分查找、数位DP | 2026春招 |
 
 ---
 
