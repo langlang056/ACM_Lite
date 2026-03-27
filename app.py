@@ -2,233 +2,27 @@
 ACM Trainer - Flask 后端
 启动: python app.py [-p 端口]
 """
-import os
-from dataclasses import asdict
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template
 
 from backend import database as db
-from backend.judge import judge
-from backend.daily import get_today_problem, refresh_daily, mark_daily_completed
+from backend.routes.problems import bp as problems_bp
+from backend.routes.judge import bp as judge_bp
+from backend.routes.stats import bp as stats_bp
 
 app = Flask(__name__,
             static_folder='frontend/static',
             template_folder='frontend/templates')
 app.config['JSON_AS_ASCII'] = False
 
+app.register_blueprint(problems_bp)
+app.register_blueprint(judge_bp)
+app.register_blueprint(stats_bp)
 
-# ==================== 内部工具 ====================
-
-def _run_judge(pid, code, mode, custom_input=None, timeout=5.0):
-    """统一判题入口：处理验证、包装和执行"""
-    if not code.strip():
-        return None, ('代码不能为空', 400)
-
-    if custom_input is not None:
-        test_cases = [{'id': 0, 'input': custom_input, 'expected_output': ''}]
-    else:
-        test_cases = db.get_test_cases(pid)
-        if not test_cases:
-            return None, ('该题没有测试用例', 400)
-
-    # 核心代码模式：拼接适配器
-    lc_wrapper = ''
-    if mode == 'core':
-        p = db.get_problem(pid)
-        lc_wrapper = p.get('lc_wrapper', '') if p else ''
-
-    result = judge(code, test_cases, timeout=timeout, mode=mode, lc_wrapper=lc_wrapper)
-    return result, None
-
-
-# ==================== 页面 ====================
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
-# ==================== 题目 API ====================
-
-@app.route('/api/problems', methods=['GET'])
-def api_list_problems():
-    problems = db.list_problems(
-        difficulty=request.args.get('difficulty'),
-        tag=request.args.get('tag'),
-        source=request.args.get('source'),
-        keyword=request.args.get('keyword'),
-    )
-    for p in problems:
-        p['best_status'] = db.get_problem_best_status(p['id'])
-    return jsonify(problems)
-
-
-@app.route('/api/problems', methods=['POST'])
-def api_create_problem():
-    data = request.json
-    pid = db.create_problem(
-        title=data['title'],
-        description=data.get('description', ''),
-        difficulty=data.get('difficulty', 'Medium'),
-        tags=data.get('tags', []),
-        source=data.get('source', ''),
-        source_url=data.get('source_url', ''),
-        template_code=data.get('template_code', ''),
-    )
-    for tc in data.get('test_cases', []):
-        db.add_test_case(pid, tc.get('input', ''), tc.get('expected_output', ''))
-    return jsonify({'id': pid, 'message': '题目创建成功'})
-
-
-@app.route('/api/problems/<int:pid>', methods=['GET'])
-def api_get_problem(pid):
-    problem = db.get_problem(pid)
-    if not problem:
-        return jsonify({'error': '题目不存在'}), 404
-    problem['test_cases'] = db.get_test_cases(pid)
-    problem['best_status'] = db.get_problem_best_status(pid)
-    return jsonify(problem)
-
-
-@app.route('/api/problems/<int:pid>', methods=['PUT'])
-def api_update_problem(pid):
-    db.update_problem(pid, **request.json)
-    return jsonify({'message': '更新成功'})
-
-
-@app.route('/api/problems/<int:pid>', methods=['DELETE'])
-def api_delete_problem(pid):
-    db.delete_problem(pid)
-    return jsonify({'message': '删除成功'})
-
-
-# ==================== 测试用例 API ====================
-
-@app.route('/api/problems/<int:pid>/testcases', methods=['GET'])
-def api_get_testcases(pid):
-    return jsonify(db.get_test_cases(pid))
-
-
-@app.route('/api/problems/<int:pid>/testcases', methods=['POST'])
-def api_add_testcase(pid):
-    data = request.json
-    if isinstance(data, list):
-        db.batch_add_test_cases(pid, data)
-        return jsonify({'message': f'批量添加 {len(data)} 个用例'})
-    tc_id = db.add_test_case(pid, data.get('input', ''), data.get('expected_output', ''))
-    return jsonify({'id': tc_id, 'message': '添加成功'})
-
-
-@app.route('/api/testcases/<int:tc_id>', methods=['PUT'])
-def api_update_testcase(tc_id):
-    db.update_test_case(tc_id, **request.json)
-    return jsonify({'message': '更新成功'})
-
-
-@app.route('/api/testcases/<int:tc_id>', methods=['DELETE'])
-def api_delete_testcase(tc_id):
-    db.delete_test_case(tc_id)
-    return jsonify({'message': '删除成功'})
-
-
-# ==================== 判题 API ====================
-
-@app.route('/api/submit/<int:pid>', methods=['POST'])
-def api_submit(pid):
-    """正式提交：判题 + 保存记录"""
-    data = request.json
-    code, mode = data.get('code', ''), data.get('mode', 'acm')
-
-    result, err = _run_judge(pid, code, mode, timeout=data.get('timeout', 5.0))
-    if err:
-        return jsonify({'error': err[0]}), err[1]
-
-    db.create_submission(
-        problem_id=pid, code=code, status=result.status,
-        time_ms=result.total_time_ms,
-        passed_cases=result.passed_cases, total_cases=result.total_cases,
-        detail=result.detail, mode=mode,
-    )
-    return jsonify(asdict(result))
-
-
-@app.route('/api/run/<int:pid>', methods=['POST'])
-def api_run(pid):
-    """调试运行：不保存记录"""
-    data = request.json
-    code, mode = data.get('code', ''), data.get('mode', 'acm')
-
-    result, err = _run_judge(pid, code, mode,
-                             custom_input=data.get('custom_input'),
-                             timeout=data.get('timeout', 5.0))
-    if err:
-        return jsonify({'error': err[0]}), err[1]
-    return jsonify(asdict(result))
-
-
-# ==================== 提交历史 ====================
-
-@app.route('/api/submissions', methods=['GET'])
-def api_submissions():
-    return jsonify(db.get_submissions(
-        problem_id=request.args.get('problem_id', type=int),
-        limit=request.args.get('limit', 50, type=int),
-    ))
-
-
-# ==================== 每日一题 ====================
-
-@app.route('/api/daily', methods=['GET'])
-def api_daily():
-    result = get_today_problem()
-    if not result:
-        return jsonify({'error': '题库为空，请先添加题目'}), 404
-    return jsonify(result)
-
-
-@app.route('/api/daily/refresh', methods=['POST'])
-def api_daily_refresh():
-    result = refresh_daily()
-    if not result:
-        return jsonify({'error': '题库为空'}), 404
-    return jsonify(result)
-
-
-@app.route('/api/daily/complete', methods=['POST'])
-def api_daily_complete():
-    mark_daily_completed()
-    return jsonify({'message': '已标记完成'})
-
-
-# ==================== 统计 / 标签 / 导入导出 ====================
-
-@app.route('/api/stats', methods=['GET'])
-def api_stats():
-    return jsonify(db.get_statistics())
-
-
-@app.route('/api/tags', methods=['GET'])
-def api_tags():
-    tags = set()
-    for p in db.list_problems():
-        tags.update(p['tags'])
-    return jsonify(sorted(tags))
-
-
-@app.route('/api/export', methods=['GET'])
-def api_export():
-    return jsonify(db.export_all())
-
-
-@app.route('/api/import', methods=['POST'])
-def api_import():
-    data = request.json
-    if not isinstance(data, list):
-        return jsonify({'error': '数据格式错误，需要是题目数组'}), 400
-    count = db.import_problems(data)
-    return jsonify({'message': f'成功导入 {count} 道题目'})
-
-
-# ==================== 启动 ====================
 
 if __name__ == '__main__':
     import argparse

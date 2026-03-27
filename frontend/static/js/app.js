@@ -8,6 +8,7 @@ let currentProblem = null;
 let currentMode = 'acm';       // 'acm' | 'core'
 let savedCode = { acm: '', core: '' };
 let _draftTimer = null;
+let editorFontSize = parseInt(localStorage.getItem('editor_font_size') || '13');
 
 // 难度对应的样式（全局复用）
 const DIFF_STYLE = {
@@ -58,7 +59,18 @@ function navigate(page, data) {
 async function loadHome() {
     loadDaily();
     loadStats();
+    loadTags();
     loadProblems();
+}
+
+async function loadTags() {
+    try {
+        const tags = await (await fetch('/api/tags')).json();
+        const sel = document.getElementById('filter-tag');
+        if (!sel) return;
+        const current = sel.value;
+        sel.innerHTML = '<option value="">全部标签</option>' + tags.map(t => `<option value="${esc(t)}"${t===current?' selected':''}>${esc(t)}</option>`).join('');
+    } catch {}
 }
 
 // -- 每日一题
@@ -142,10 +154,12 @@ async function loadProblems() { filterProblems(); }
 async function filterProblems() {
     const keyword = document.getElementById('search-input').value;
     const difficulty = document.getElementById('filter-difficulty').value;
+    const tag = document.getElementById('filter-tag')?.value || '';
     const sortOrder = document.getElementById('sort-order').value;
     const params = new URLSearchParams();
     if (keyword) params.set('keyword', keyword);
     if (difficulty) params.set('difficulty', difficulty);
+    if (tag) params.set('tag', tag);
 
     const res = await fetch('/api/problems?' + params);
     let problems = await res.json();
@@ -357,7 +371,7 @@ function initEditor(code) {
             value: code,
             language: 'python',
             theme: 'vs',
-            fontSize: 13,
+            fontSize: editorFontSize,
             fontFamily: "'JetBrains Mono', 'SF Mono', 'Consolas', monospace",
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
@@ -371,8 +385,8 @@ function initEditor(code) {
             hideCursorInOverviewRuler: true,
             scrollbar: { vertical: 'hidden', horizontal: 'auto' },
         });
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => runCode());
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => submitCode());
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => submitCode());
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => runCode());
         // 编辑时自动保存草稿
         editor.onDidChangeModelContent(() => scheduleDraftSave());
     });
@@ -387,6 +401,14 @@ function resetCode() {
     editor.setValue(tmpl);
     savedCode[currentMode] = '';
     clearDraft(currentProblem.id, currentMode);
+}
+
+function setFontSize(delta) {
+    editorFontSize = Math.max(11, Math.min(20, editorFontSize + delta));
+    localStorage.setItem('editor_font_size', editorFontSize);
+    if (editor) editor.updateOptions({ fontSize: editorFontSize });
+    const label = document.getElementById('font-size-label');
+    if (label) label.textContent = editorFontSize;
 }
 
 // ==================== 运行 & 提交 ====================
@@ -740,6 +762,8 @@ function fmtCoreInput(raw, fmt) {
 
 // ==================== 初始化 ====================
 document.addEventListener('DOMContentLoaded', () => {
+    const lbl = document.getElementById('font-size-label');
+    if (lbl) lbl.textContent = editorFontSize;
     navigate('home');
     // Escape 关闭弹窗
     document.addEventListener('keydown', e => {

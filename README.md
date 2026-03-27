@@ -13,7 +13,7 @@ python app.py              # 默认 8080 端口
 python app.py -p 9000      # 自定义端口
 ```
 
-启动后访问 `http://localhost:8080`。首次启动自动建库并导入 22 道内置题目。
+启动后访问 `http://localhost:8080`。首次启动自动建库并导入 29 道内置题目（22 道 LeetCode 经典题 + 7 道阿里巴巴笔试真题）。
 
 ---
 
@@ -21,16 +21,22 @@ python app.py -p 9000      # 自定义端口
 
 ```
 acm_trainer/
-├── app.py                      # Flask 入口，所有 API 路由
-├── backend/                    # 后端逻辑
-│   ├── database.py             #   数据层，SQLite 表定义 + CRUD
-│   ├── judge.py                #   判题引擎，subprocess 隔离执行
-│   ├── daily.py                #   每日一题，四级优先策略选题
-│   └── seed_data.py            #   22 道内置题目数据
-├── frontend/                   # 前端资源
-│   ├── static/js/app.js        #   单页应用逻辑
-│   └── templates/index.html    #   HTML 页面 (Tailwind + Monaco)
-├── data/                       # SQLite 数据库（自动生成，已 gitignore）
+├── app.py                          # Flask 入口，注册 Blueprint
+├── backend/                        # 后端逻辑
+│   ├── database.py                 #   数据层，SQLite 表定义 + CRUD
+│   ├── judge.py                    #   判题引擎，subprocess 隔离执行
+│   ├── daily.py                    #   每日一题，四级优先策略选题
+│   ├── seed_data.py                #   种子数据加载器（从 JSON 读取）
+│   └── routes/                     #   Flask Blueprint 路由
+│       ├── problems.py             #     题目 CRUD + 测试用例 + 导入导出
+│       ├── judge.py                #     代码运行 + 提交 + 提交历史
+│       └── stats.py                #     统计 + 标签 + 每日一题
+├── frontend/                       # 前端资源
+│   ├── static/js/app.js            #   单页应用逻辑
+│   └── templates/index.html        #   HTML 页面 (Tailwind + Monaco)
+├── data/                           # 运行时数据（已 gitignore）
+│   ├── acm_trainer.db              #   SQLite 数据库（自动生成）
+│   └── problems_seed.json          #   29 道内置题目（22 LeetCode + 7 阿里真题）
 ├── README.md
 └── .gitignore
 ```
@@ -39,11 +45,14 @@ acm_trainer/
 
 | 模块 | 职责 | 依赖 |
 |------|------|------|
-| app.py | HTTP 路由、请求校验、调用后端模块 | backend.* |
+| app.py | 创建 Flask 应用、注册 Blueprint、启动服务 | backend.routes.* |
+| backend/routes/problems.py | 题目 CRUD、测试用例管理、导入导出 | database |
+| backend/routes/judge.py | 代码运行（调试）、提交（保存）、提交历史 | database, judge |
+| backend/routes/stats.py | 做题统计、标签列表、每日一题管理 | database, daily |
 | backend/database.py | 4 张表的 CRUD、统计、导入导出 | 无 |
 | backend/judge.py | 代码执行、超时控制、输出比对 | 无 |
 | backend/daily.py | 智能选题（薄弱题 > 遗忘复习 > 新题 > 随机） | database |
-| backend/seed_data.py | 内置题库数据定义 + 增量插入 | database |
+| backend/seed_data.py | 从 JSON 加载种子题目，增量插入数据库 | database |
 | frontend/static/js/app.js | 前端路由、编辑器管理、API 调用、草稿保存 | Monaco, marked.js |
 
 ### 数据库表结构
@@ -52,6 +61,26 @@ acm_trainer/
 - **test_cases** -- 测试用例（输入、期望输出、排序）
 - **submissions** -- 提交记录（代码、状态、耗时、模式）
 - **daily_problems** -- 每日一题记录（日期、完成状态）
+
+---
+
+## 内置题库
+
+### LeetCode 经典题（22 道）
+
+涵盖数组、链表、树、动态规划、贪心、设计类等常见考点。
+
+### 阿里巴巴笔试真题（7 道）
+
+| 题目 | 难度 | 标签 | 来源 |
+|------|------|------|------|
+| N×3方格填数 | Medium | DP、状态压缩 | 2021春招 |
+| 词语模式匹配 | Easy | 哈希表、双射 | 2021春招 |
+| 删除字符使字典序最小 | Medium | 贪心、单调栈 | 笔试真题 |
+| 最小花费乘到目标 | Medium | DFS、数学 | 笔试真题 |
+| 矩阵聚光灯得分 | Medium | 前缀和、矩阵 | 2022笔试 |
+| 十六进制转二进制计1 | Easy | 位运算 | 2022/2023笔试 |
+| 三元组差值统计 | Medium | 哈希表、组合数学 | 2023笔试 |
 
 ---
 
@@ -79,13 +108,15 @@ acm_trainer/
 
 | 快捷键 | 功能 |
 |--------|------|
-| Ctrl/Cmd + Enter | 运行代码 |
-| Ctrl/Cmd + Shift + Enter | 提交代码 |
+| Ctrl/Cmd + Enter | 提交代码 |
+| Ctrl/Cmd + Shift + Enter | 运行代码 |
 | Escape | 关闭弹窗 |
 
 ### 其他特性
 
-- 代码草稿自动保存到 localStorage，刷新不丢失
+- 代码草稿自动保存到 localStorage，切题再回来不丢失
+- 编辑器字体大小可调（工具栏 +/- 按钮，持久化保存）
+- 标签筛选：题库支持按标签过滤
 - 每日一题智能推荐，30 天内不重复
 - 题库 JSON 导入导出（页面底部）
 - 题目分组展示：面试真题 / LeetCode 原题
@@ -96,7 +127,7 @@ acm_trainer/
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `/api/problems` | 题目列表（支持 difficulty/keyword 筛选） |
+| GET | `/api/problems` | 题目列表（支持 difficulty/tag/keyword 筛选） |
 | POST | `/api/problems` | 创建题目 |
 | GET/PUT/DELETE | `/api/problems/<id>` | 单题 CRUD |
 | GET/POST | `/api/problems/<id>/testcases` | 测试用例 |

@@ -12,9 +12,10 @@ venv/
 .venv/
 env/
 
-# 数据库与测试文件（用户数据，不入库）
+# 数据库与运行时文件（用户数据，不入库）
 data/*
 !data/.gitkeep
+!data/problems_seed.json
 
 # IDE
 .vscode/

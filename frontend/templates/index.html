@@ -97,6 +97,10 @@
                                     <option value="Medium">Medium</option>
                                     <option value="Hard">Hard</option>
                                 </select>
+                                <select id="filter-tag" onchange="filterProblems()"
+                                    class="h-9 pl-3 pr-8 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary select-arrow">
+                                    <option value="">全部标签</option>
+                                </select>
                                 <select id="sort-order" onchange="filterProblems()"
                                     class="h-9 pl-3 pr-8 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary select-arrow">
                                     <option value="id_desc">最新添加</option>
@@ -194,6 +198,15 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-0.5 text-slate-400">
+                                <button onclick="setFontSize(-1)" class="p-1 hover:text-slate-600 transition-colors" title="缩小字体">
+                                    <span class="material-symbols-outlined text-[18px]">text_decrease</span>
+                                </button>
+                                <span id="font-size-label" class="text-xs w-5 text-center select-none"></span>
+                                <button onclick="setFontSize(1)" class="p-1 hover:text-slate-600 transition-colors" title="放大字体">
+                                    <span class="material-symbols-outlined text-[18px]">text_increase</span>
+                                </button>
+                            </div>
                             <button onclick="resetCode()" class="p-1.5 text-slate-400 hover:text-slate-600 transition-colors" title="重置代码">
                                 <span class="material-symbols-outlined text-[20px]">restart_alt</span>
                             </button>
@@ -233,11 +246,11 @@
                             自定义输入
                         </label>
                         <div class="flex gap-3">
-                            <button id="btn-run" onclick="runCode()"
+                            <button id="btn-run" onclick="runCode()" title="Ctrl+Shift+Enter"
                                 class="px-6 py-2 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors text-sm font-semibold">
                                 运行
                             </button>
-                            <button id="btn-submit" onclick="submitCode()"
+                            <button id="btn-submit" onclick="submitCode()" title="Ctrl+Enter"
                                 class="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors text-sm font-bold shadow-sm shadow-primary/20">
                                 提交
                             </button>

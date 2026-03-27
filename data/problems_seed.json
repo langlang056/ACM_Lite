@@ -1,0 +1,875 @@
+[
+  {
+    "title": "两数之和",
+    "difficulty": "Easy",
+    "tags": [
+      "数组",
+      "哈希表"
+    ],
+    "source": "LeetCode #1",
+    "source_url": "https://leetcode.cn/problems/two-sum/",
+    "description": "## 题目描述\n\n给定一个整数数组 `nums` 和一个整数目标值 `target`，请你在该数组中找出 **和为目标值** 的那 **两个** 整数，并返回它们的数组下标。\n\n你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元素。\n\n### 示例\n\n```\n输入: nums = [2,7,11,15], target = 9\n输出: [0,1]\n```\n\n### 约束\n\n- `2 <= nums.length <= 10^4`\n- 只会存在一个有效答案\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n, target = map(int, input().split())\n    nums = list(map(int, input().split()))\n    # 在这里写你的解法\n    pass\n\nsolve()\n",
+    "lc_template": "def twoSum(nums, target):\n    # 返回两个下标的列表\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn, target = map(int, input().split())\nnums = list(map(int, input().split()))\nprint(*twoSum(nums, target))\n",
+    "test_cases": [
+      {
+        "input": "4 9\n2 7 11 15",
+        "expected_output": "0 1"
+      },
+      {
+        "input": "3 6\n3 2 4",
+        "expected_output": "1 2"
+      },
+      {
+        "input": "2 6\n3 3",
+        "expected_output": "0 1"
+      }
+    ],
+    "lc_input_fmt": "nums = {2[]}, target = {1:2}"
+  },
+  {
+    "title": "最长递增子序列",
+    "difficulty": "Medium",
+    "tags": [
+      "动态规划",
+      "二分查找"
+    ],
+    "source": "LeetCode #300",
+    "source_url": "https://leetcode.cn/problems/longest-increasing-subsequence/",
+    "description": "## 题目描述\n\n给你一个整数数组 `nums`，找到其中最长严格递增子序列的长度。\n\n### 示例\n\n```\n输入: nums = [10,9,2,5,3,7,101,18]\n输出: 4\n解释: 最长递增子序列是 [2,3,7,101]\n```\n\n### 约束\n\n- `1 <= nums.length <= 2500`\n- `-10^4 <= nums[i] <= 10^4`\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    nums = list(map(int, input().split()))\n    pass\n\nsolve()\n",
+    "lc_template": "def lengthOfLIS(nums):\n    # 返回最长递增子序列的长度\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nnums = list(map(int, input().split()))\nprint(lengthOfLIS(nums))\n",
+    "test_cases": [
+      {
+        "input": "8\n10 9 2 5 3 7 101 18",
+        "expected_output": "4"
+      },
+      {
+        "input": "6\n0 1 0 3 2 3",
+        "expected_output": "4"
+      },
+      {
+        "input": "1\n7",
+        "expected_output": "1"
+      },
+      {
+        "input": "8\n7 7 7 7 7 7 7 7",
+        "expected_output": "1"
+      }
+    ],
+    "lc_input_fmt": "nums = {2[]}"
+  },
+  {
+    "title": "接雨水",
+    "difficulty": "Hard",
+    "tags": [
+      "栈",
+      "数组",
+      "双指针",
+      "单调栈"
+    ],
+    "source": "LeetCode #42",
+    "source_url": "https://leetcode.cn/problems/trapping-rain-water/",
+    "description": "## 题目描述\n\n给定 `n` 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。\n\n### 示例\n\n```\n输入: height = [0,1,0,2,1,0,1,3,2,1,2,1]\n输出: 6\n```\n\n### 约束\n\n- `1 <= n <= 2 * 10^4`\n- `0 <= height[i] <= 10^5`\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    height = list(map(int, input().split()))\n    pass\n\nsolve()\n",
+    "lc_template": "def trap(height):\n    # 返回能接的雨水量\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nheight = list(map(int, input().split()))\nprint(trap(height))\n",
+    "test_cases": [
+      {
+        "input": "12\n0 1 0 2 1 0 1 3 2 1 2 1",
+        "expected_output": "6"
+      },
+      {
+        "input": "6\n4 2 0 3 2 5",
+        "expected_output": "9"
+      },
+      {
+        "input": "3\n1 0 1",
+        "expected_output": "1"
+      }
+    ],
+    "lc_input_fmt": "height = {2[]}"
+  },
+  {
+    "title": "合并区间",
+    "difficulty": "Medium",
+    "tags": [
+      "排序",
+      "数组"
+    ],
+    "source": "LeetCode #56",
+    "source_url": "https://leetcode.cn/problems/merge-intervals/",
+    "description": "## 题目描述\n\n以数组 `intervals` 表示若干个区间的集合，请你合并所有重叠的区间，并返回一个不重叠的区间数组。\n\n### 示例\n\n```\n输入: intervals = [[1,3],[2,6],[8,10],[15,18]]\n输出: [[1,6],[8,10],[15,18]]\n```\n\n### 约束\n\n- `1 <= intervals.length <= 10^4`\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    intervals = []\n    for _ in range(n):\n        a, b = map(int, input().split())\n        intervals.append([a, b])\n    pass\n\nsolve()\n",
+    "lc_template": "def merge(intervals):\n    # 返回合并后的区间列表\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nintervals = [list(map(int, input().split())) for _ in range(n)]\nresult = merge(intervals)\nfor a, b in result:\n    print(a, b)\n",
+    "test_cases": [
+      {
+        "input": "4\n1 3\n2 6\n8 10\n15 18",
+        "expected_output": "1 6\n8 10\n15 18"
+      },
+      {
+        "input": "2\n1 4\n4 5",
+        "expected_output": "1 5"
+      }
+    ],
+    "lc_input_fmt": "intervals = {2..mat}"
+  },
+  {
+    "title": "岛屿数量",
+    "difficulty": "Medium",
+    "tags": [
+      "BFS",
+      "DFS",
+      "并查集"
+    ],
+    "source": "LeetCode #200",
+    "source_url": "https://leetcode.cn/problems/number-of-islands/",
+    "description": "## 题目描述\n\n给你一个由 `'1'`（陆地）和 `'0'`（水）组成的二维网格，请你计算网格中岛屿的数量。\n\n### 示例\n\n```\n输入: grid = [[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"1\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"1\",\"1\"]]\n输出: 3\n```\n\n### 约束\n\n- `1 <= m, n <= 300`\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    m, n = map(int, input().split())\n    grid = [list(input().split()) for _ in range(m)]\n    pass\n\nsolve()\n",
+    "lc_template": "def numIslands(grid):\n    # 返回岛屿数量\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nm, n = map(int, input().split())\ngrid = [list(input().split()) for _ in range(m)]\nprint(numIslands(grid))\n",
+    "test_cases": [
+      {
+        "input": "4 5\n1 1 1 1 0\n1 1 0 1 0\n1 1 0 0 0\n0 0 0 0 0",
+        "expected_output": "1"
+      },
+      {
+        "input": "4 5\n1 1 0 0 0\n1 1 0 0 0\n0 0 1 0 0\n0 0 0 1 1",
+        "expected_output": "3"
+      }
+    ],
+    "lc_input_fmt": "grid = {2..mat}"
+  },
+  {
+    "title": "移掉K位数字",
+    "difficulty": "Medium",
+    "tags": [
+      "栈",
+      "贪心",
+      "单调栈"
+    ],
+    "source": "LeetCode #402",
+    "source_url": "https://leetcode.cn/problems/remove-k-digits/",
+    "description": "## 题目描述\n\n给你一个以字符串表示的非负整数 `num` 和一个整数 `k`，移除这个数中的 `k` 位数字，使得剩下的数字最小。请你以字符串形式返回这个最小的数字。\n\n### 示例\n\n```\n输入: num = \"1432219\", k = 3\n输出: \"1219\"\n解释: 移除掉三个数字 4, 3, 和 2 形成一个新的最小的数字 1219\n```\n\n```\n输入: num = \"10200\", k = 1\n输出: \"200\"\n```\n\n```\n输入: num = \"10\", k = 2\n输出: \"0\"\n```\n\n### 约束\n\n- `1 <= k <= num.length <= 10^5`\n- `num` 仅由若干位数字（0-9）组成\n- 除了 0 本身之外，`num` 不含任何前导零\n\n### 提示\n\n使用单调栈：遍历数字，当栈顶元素大于当前数字时弹出栈顶（相当于移除），直到移除 k 个数字。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    num = input().strip()\n    k = int(input())\n    # 输出移除k位后的最小数字字符串\n    pass\n\nsolve()\n",
+    "lc_template": "def removeKdigits(num, k):\n    # 返回移除k位后的最小数字字符串\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nnum = input().strip()\nk = int(input())\nprint(removeKdigits(num, k))\n",
+    "test_cases": [
+      {
+        "input": "1432219\n3",
+        "expected_output": "1219"
+      },
+      {
+        "input": "10200\n1",
+        "expected_output": "200"
+      },
+      {
+        "input": "10\n2",
+        "expected_output": "0"
+      },
+      {
+        "input": "9\n1",
+        "expected_output": "0"
+      }
+    ],
+    "lc_input_fmt": "num = \"{1}\", k = {2}"
+  },
+  {
+    "title": "累加数",
+    "difficulty": "Medium",
+    "tags": [
+      "字符串",
+      "回溯"
+    ],
+    "source": "LeetCode #306",
+    "source_url": "https://leetcode.cn/problems/additive-number/",
+    "description": "## 题目描述\n\n**累加数** 是一个字符串，组成它的数字可以形成累加序列。一个有效的累加序列必须 **至少** 包含 3 个数。除了最开始的两个数以外，序列中的每个后续数字必须是它之前两个数字之和。\n\n给你一个只包含数字 `'0'-'9'` 的字符串，编写一个算法来判断给定输入是否是 **累加数**。\n\n**说明**：累加序列里的数，除数字 0 之外，不会以 0 开头。\n\n### 示例\n\n```\n输入: \"112358\"\n输出: true\n解释: 1 + 1 = 2, 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8\n```\n\n```\n输入: \"199100199\"\n输出: true\n解释: 1 + 99 = 100, 99 + 100 = 199\n```\n\n### 约束\n\n- `1 <= num.length <= 35`\n\n### 提示\n\n回溯枚举前两个数的分割位置，然后验证后续是否满足累加关系。注意大数相加。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    num = input().strip()\n    # 输出 true 或 false\n    pass\n\nsolve()\n",
+    "lc_template": "def isAdditiveNumber(num):\n    # 返回 True 或 False\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nnum = input().strip()\nprint('true' if isAdditiveNumber(num) else 'false')\n",
+    "test_cases": [
+      {
+        "input": "112358",
+        "expected_output": "true"
+      },
+      {
+        "input": "199100199",
+        "expected_output": "true"
+      },
+      {
+        "input": "1203",
+        "expected_output": "false"
+      },
+      {
+        "input": "101",
+        "expected_output": "true"
+      }
+    ],
+    "lc_input_fmt": "num = \"{1}\""
+  },
+  {
+    "title": "目标和",
+    "difficulty": "Medium",
+    "tags": [
+      "动态规划",
+      "回溯",
+      "背包"
+    ],
+    "source": "LeetCode #494",
+    "source_url": "https://leetcode.cn/problems/target-sum/",
+    "description": "## 题目描述\n\n给你一个非负整数数组 `nums` 和一个整数 `target`。\n\n向数组中的每个整数前添加 `+` 或 `-`，然后串联起所有整数，可以构造一个 **表达式**。返回可以通过上述方法构造的、运算结果等于 `target` 的不同表达式的数目。\n\n### 示例\n\n```\n输入: nums = [1,1,1,1,1], target = 3\n输出: 5\n解释: 共 5 种方法让最终目标和为 3:\n-1 + 1 + 1 + 1 + 1 = 3\n+1 - 1 + 1 + 1 + 1 = 3\n+1 + 1 - 1 + 1 + 1 = 3\n+1 + 1 + 1 - 1 + 1 = 3\n+1 + 1 + 1 + 1 - 1 = 3\n```\n\n### 约束\n\n- `1 <= nums.length <= 20`\n- `0 <= nums[i] <= 1000`\n- `-1000 <= target <= 1000`\n\n### 提示\n\n可转化为 0-1 背包问题：设正数子集之和为 P，则 P = (sum + target) / 2，问题变为在 nums 中选取若干数使和为 P。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n, target = map(int, input().split())\n    nums = list(map(int, input().split()))\n    # 输出方案数\n    pass\n\nsolve()\n",
+    "lc_template": "def findTargetSumWays(nums, target):\n    # 返回方案数\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn, target = map(int, input().split())\nnums = list(map(int, input().split()))\nprint(findTargetSumWays(nums, target))\n",
+    "test_cases": [
+      {
+        "input": "5 3\n1 1 1 1 1",
+        "expected_output": "5"
+      },
+      {
+        "input": "1 1\n1",
+        "expected_output": "1"
+      },
+      {
+        "input": "5 5\n1 1 1 1 1",
+        "expected_output": "1"
+      }
+    ],
+    "lc_input_fmt": "nums = {2[]}, target = {1:2}"
+  },
+  {
+    "title": "分隔链表",
+    "difficulty": "Medium",
+    "tags": [
+      "链表",
+      "双指针"
+    ],
+    "source": "LeetCode #86",
+    "source_url": "https://leetcode.cn/problems/partition-list/",
+    "description": "## 题目描述\n\n给你一个链表的头节点 `head` 和一个特定值 `x`，请你对链表进行分隔，使得所有 **小于** `x` 的节点都出现在 **大于或等于** `x` 的节点之前。\n\n你应当保留两个分区中每个节点的初始相对顺序。\n\n### 示例\n\n```\n输入: head = [1,4,3,2,5,2], x = 3\n输出: [1,2,2,4,3,5]\n```\n\n```\n输入: head = [2,1], x = 2\n输出: [1,2]\n```\n\n### 约束\n\n- 节点数目在 `[0, 200]` 范围内\n- `-100 <= Node.val <= 100`\n- `-200 <= x <= 200`\n\n### 提示\n\n创建两个哑节点分别收集小于 x 和大于等于 x 的节点，最后拼接。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n, x = map(int, input().split())\n    vals = list(map(int, input().split()))\n    # 模拟链表分隔，输出结果序列\n    pass\n\nsolve()\n",
+    "lc_template": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef partition(head, x):\n    # 返回分隔后的链表头节点\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef _build_list(arr):\n    dummy = ListNode(0)\n    cur = dummy\n    for v in arr:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\ndef _print_list(head):\n    res = []\n    while head:\n        res.append(str(head.val))\n        head = head.next\n    print(' '.join(res) if res else '')\n\nn, x = map(int, input().split())\nvals = list(map(int, input().split()))\nhead = _build_list(vals)\nresult = partition(head, x)\n_print_list(result)\n",
+    "test_cases": [
+      {
+        "input": "6 3\n1 4 3 2 5 2",
+        "expected_output": "1 2 2 4 3 5"
+      },
+      {
+        "input": "2 2\n2 1",
+        "expected_output": "1 2"
+      },
+      {
+        "input": "0 0",
+        "expected_output": ""
+      }
+    ],
+    "lc_input_fmt": "head = {2[]}, x = {1:2}"
+  },
+  {
+    "title": "分隔链表为k部分",
+    "difficulty": "Medium",
+    "tags": [
+      "链表"
+    ],
+    "source": "LeetCode #725",
+    "source_url": "https://leetcode.cn/problems/split-linked-list-in-parts/",
+    "description": "## 题目描述\n\n给你一个头节点为 `head` 的单链表和一个整数 `k`，请你设计一个算法将链表分隔为 `k` 个连续的部分。\n\n每部分的长度应该尽可能的相等：任意两部分的长度差距不能超过 1。前面的部分的长度应该大于或等于后面的部分的长度。\n\n返回一个由上述 `k` 部分组成的数组。\n\n### 示例\n\n```\n输入: head = [1,2,3], k = 5\n输出: [[1],[2],[3],[],[]]\n```\n\n```\n输入: head = [1,2,3,4,5,6,7,8,9,10], k = 3\n输出: [[1,2,3,4],[5,6,7],[8,9,10]]\n```\n\n### 约束\n\n- 节点数目在 `[0, 1000]` 范围内\n- `1 <= k <= 50`\n\n### 提示\n\n先计算链表长度，然后 divmod(length, k) 得到每部分的基础长度和多出来几个，前 remainder 个部分多分一个节点。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n, k = map(int, input().split())\n    vals = list(map(int, input().split())) if n > 0 else []\n    # 每部分输出一行，空部分输出 empty\n    pass\n\nsolve()\n",
+    "lc_template": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef splitListToParts(head, k):\n    # 返回包含 k 个链表头节点的列表\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef _build_list(arr):\n    dummy = ListNode(0)\n    cur = dummy\n    for v in arr:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\ndef _print_list(head):\n    res = []\n    while head:\n        res.append(str(head.val))\n        head = head.next\n    print(' '.join(res) if res else '')\n\nn, k = map(int, input().split())\nvals = list(map(int, input().split())) if n > 0 else []\nhead = _build_list(vals)\nparts = splitListToParts(head, k)\nfor part in parts:\n    if part is None:\n        print('empty')\n    else:\n        _print_list(part)\n",
+    "test_cases": [
+      {
+        "input": "3 5\n1 2 3",
+        "expected_output": "1\n2\n3\nempty\nempty"
+      },
+      {
+        "input": "10 3\n1 2 3 4 5 6 7 8 9 10",
+        "expected_output": "1 2 3 4\n5 6 7\n8 9 10"
+      }
+    ],
+    "lc_input_fmt": "head = {2[]}, k = {1:2}"
+  },
+  {
+    "title": "小于n的最大数",
+    "difficulty": "Medium",
+    "tags": [
+      "DFS",
+      "贪心",
+      "回溯"
+    ],
+    "source": "面试高频",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定一个由数字组成的集合 `digits`（数字范围 1-9，不含 0）和一个正整数 `n`，从 `digits` 中选取数字（可重复选取），组成一个小于 `n` 的最大数。\n\n### 示例\n\n```\n输入: digits = [1,2,9], n = 920\n输出: 919\n```\n\n```\n输入: digits = [5,9], n = 100\n输出: 99\n```\n\n```\n输入: digits = [2,3,8], n = 230\n输出: 228\n```\n\n### 约束\n\n- `1 <= digits.length <= 9`\n- `1 <= digits[i] <= 9`，无重复\n- `1 <= n <= 10^9`\n\n### 提示\n\nDFS + 回溯：逐位构建，维护 `is_smaller` 标记。当 `is_smaller=True` 时后续所有位取最大数字；否则尝试取小于当前位的最大数字，或相等数字（进入下一位递归）。如果所有位都相等无法变小，则减少一位，每位填最大数字。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    digits = list(map(int, input().split()))\n    n = int(input())\n    # 输出小于 n 的最大数\n    pass\n\nsolve()\n",
+    "lc_template": "def largestSmaller(digits, n):\n    # 返回小于 n 的最大数\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\ndigits = list(map(int, input().split()))\nn = int(input())\nprint(largestSmaller(digits, n))\n",
+    "test_cases": [
+      {
+        "input": "1 2 9\n920",
+        "expected_output": "919"
+      },
+      {
+        "input": "5 9\n100",
+        "expected_output": "99"
+      },
+      {
+        "input": "2 3 8\n230",
+        "expected_output": "228"
+      },
+      {
+        "input": "1 2\n21",
+        "expected_output": "12"
+      }
+    ],
+    "lc_input_fmt": "digits = {1[]}, n = {2}"
+  },
+  {
+    "title": "恰好有n个因子的最小正整数",
+    "difficulty": "Medium",
+    "tags": [
+      "数学",
+      "质因数",
+      "DFS"
+    ],
+    "source": "面试高频",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定正整数 `n`，求恰好有 `n` 个因子（包括 1 和自身）的最小正整数。\n\n### 示例\n\n```\n输入: 1\n输出: 1\n解释: 1 只有 1 个因子\n```\n\n```\n输入: 4\n输出: 6\n解释: 6 的因子为 1,2,3,6 共 4 个\n```\n\n```\n输入: 12\n输出: 60\n解释: 60 的因子为 1,2,3,4,5,6,10,12,15,20,30,60 共 12 个\n```\n\n### 约束\n\n- `1 <= n <= 1000`\n\n### 提示\n\n因子个数公式：若 `x = p1^a1 * p2^a2 * ...`，则因子数 = `(a1+1)(a2+1)...`。将 n 质因数分解后，把指数降序排列分配给最小的质数 2, 3, 5, 7... 可得最小结果。用 DFS 枚举 n 的因式分解方式，取使结果最小的方案。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    # 输出恰好有 n 个因子的最小正整数\n    pass\n\nsolve()\n",
+    "lc_template": "def smallestWithNDivisors(n):\n    # 返回恰好有 n 个因子的最小正整数\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nprint(smallestWithNDivisors(n))\n",
+    "test_cases": [
+      {
+        "input": "1",
+        "expected_output": "1"
+      },
+      {
+        "input": "4",
+        "expected_output": "6"
+      },
+      {
+        "input": "12",
+        "expected_output": "60"
+      },
+      {
+        "input": "24",
+        "expected_output": "360"
+      }
+    ],
+    "lc_input_fmt": "n = {1}"
+  },
+  {
+    "title": "两两交换链表中的节点",
+    "difficulty": "Medium",
+    "tags": [
+      "链表",
+      "递归"
+    ],
+    "source": "LeetCode #24",
+    "source_url": "https://leetcode.cn/problems/swap-nodes-in-pairs/",
+    "description": "## 题目描述\n\n给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即只能进行节点交换）。\n\n### 示例\n\n```\n输入: head = [1,2,3,4]\n输出: [2,1,4,3]\n```\n\n```\n输入: head = [1]\n输出: [1]\n```\n\n### 约束\n\n- 节点数目在 `[0, 100]` 范围内\n- `0 <= Node.val <= 100`\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    vals = list(map(int, input().split())) if n > 0 else []\n    # 两两交换后输出\n    pass\n\nsolve()\n",
+    "lc_template": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef swapPairs(head):\n    # 返回交换后的链表头节点\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef _build_list(arr):\n    dummy = ListNode(0)\n    cur = dummy\n    for v in arr:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\ndef _print_list(head):\n    res = []\n    while head:\n        res.append(str(head.val))\n        head = head.next\n    print(' '.join(res) if res else '')\n\nn = int(input())\nvals = list(map(int, input().split())) if n > 0 else []\nhead = _build_list(vals)\nresult = swapPairs(head)\n_print_list(result)\n",
+    "test_cases": [
+      {
+        "input": "4\n1 2 3 4",
+        "expected_output": "2 1 4 3"
+      },
+      {
+        "input": "1\n1",
+        "expected_output": "1"
+      },
+      {
+        "input": "5\n1 2 3 4 5",
+        "expected_output": "2 1 4 3 5"
+      }
+    ],
+    "lc_input_fmt": "head = {2[]}"
+  },
+  {
+    "title": "二叉树的最近公共祖先",
+    "difficulty": "Medium",
+    "tags": [
+      "树",
+      "DFS",
+      "递归"
+    ],
+    "source": "LeetCode #236",
+    "source_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/",
+    "description": "## 题目描述\n\n给定一个二叉树，找到该树中两个指定节点的最近公共祖先（LCA）。\n\n最近公共祖先的定义为：对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。\n\n### 示例\n\n```\n输入: root = [3,5,1,6,2,0,8,-1,-1,7,4], p = 5, q = 1\n输出: 3\n```\n\n```\n输入: root = [3,5,1,6,2,0,8,-1,-1,7,4], p = 5, q = 4\n输出: 5\n```\n\n### 约束\n\n- 树中节点数目在 `[2, 10^5]` 范围内\n- 所有节点的值都是唯一的\n- `p != q`\n- p 和 q 均存在于给定的二叉树中\n\n### 输入格式 (ACM)\n\n第一行：节点数 n，然后 n 个值（层序遍历，-1 表示 null），最后一行两个值 p q。\n",
+    "template_code": "import sys\nfrom collections import deque\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    vals = list(map(int, input().split()))\n    p, q = map(int, input().split())\n    # 构建树并求 LCA，输出 LCA 的值\n    pass\n\nsolve()\n",
+    "lc_template": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef lowestCommonAncestor(root, p, q):\n    # p, q 是 TreeNode 节点，返回 LCA 节点\n    pass\n",
+    "lc_wrapper": "import sys\nfrom collections import deque\ninput = sys.stdin.readline\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef _build_tree(vals):\n    if not vals or vals[0] == -1:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] != -1:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] != -1:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\ndef _find_node(root, val):\n    if not root:\n        return None\n    if root.val == val:\n        return root\n    return _find_node(root.left, val) or _find_node(root.right, val)\n\nn = int(input())\nvals = list(map(int, input().split()))\npv, qv = map(int, input().split())\nroot = _build_tree(vals)\np = _find_node(root, pv)\nq = _find_node(root, qv)\nresult = lowestCommonAncestor(root, p, q)\nprint(result.val)\n",
+    "test_cases": [
+      {
+        "input": "11\n3 5 1 6 2 0 8 -1 -1 7 4\n5 1",
+        "expected_output": "3"
+      },
+      {
+        "input": "11\n3 5 1 6 2 0 8 -1 -1 7 4\n5 4",
+        "expected_output": "5"
+      }
+    ],
+    "lc_input_fmt": "tree = {2[]}, p = {3:1}, q = {3:2}"
+  },
+  {
+    "title": "二叉树的最大宽度",
+    "difficulty": "Medium",
+    "tags": [
+      "树",
+      "BFS"
+    ],
+    "source": "LeetCode #662",
+    "source_url": "https://leetcode.cn/problems/maximum-width-of-binary-tree/",
+    "description": "## 题目描述\n\n给你一棵二叉树的根节点 `root`，返回树的 **最大宽度**。\n\n树的最大宽度是所有层中最大的宽度。每一层的宽度被定义为该层最左和最右的非空节点之间的长度（包含 null 节点）。\n\n### 示例\n\n```\n输入: root = [1,3,2,5,3,-1,9]\n输出: 4\n解释: 第 3 层宽度为 4 (5,3,null,9)\n```\n\n```\n输入: root = [1,3,2,5,-1,-1,-1]\n输出: 2\n```\n\n### 约束\n\n- 树中节点数目范围是 `[1, 3000]`\n\n### 提示\n\nBFS 层序遍历，给每个节点编号（根为 1，左子 2i，右子 2i+1），每层宽度 = 最右编号 - 最左编号 + 1。\n",
+    "template_code": "import sys\nfrom collections import deque\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    vals = list(map(int, input().split()))\n    # 构建树并求最大宽度\n    pass\n\nsolve()\n",
+    "lc_template": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef widthOfBinaryTree(root):\n    # 返回最大宽度\n    pass\n",
+    "lc_wrapper": "import sys\nfrom collections import deque\ninput = sys.stdin.readline\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef _build_tree(vals):\n    if not vals or vals[0] == -1:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] != -1:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] != -1:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\ndef _find_node(root, val):\n    if not root:\n        return None\n    if root.val == val:\n        return root\n    return _find_node(root.left, val) or _find_node(root.right, val)\n\nn = int(input())\nvals = list(map(int, input().split()))\nroot = _build_tree(vals)\nprint(widthOfBinaryTree(root))\n",
+    "test_cases": [
+      {
+        "input": "7\n1 3 2 5 3 -1 9",
+        "expected_output": "4"
+      },
+      {
+        "input": "5\n1 3 2 5 -1",
+        "expected_output": "2"
+      },
+      {
+        "input": "1\n1",
+        "expected_output": "1"
+      }
+    ],
+    "lc_input_fmt": "tree = {2[]}"
+  },
+  {
+    "title": "字典序的第K小数字",
+    "difficulty": "Hard",
+    "tags": [
+      "字典树",
+      "数学"
+    ],
+    "source": "LeetCode #440",
+    "source_url": "https://leetcode.cn/problems/k-th-smallest-in-lexicographical-order/",
+    "description": "## 题目描述\n\n给定整数 `n` 和 `k`，返回 `[1, n]` 中字典序第 `k` 小的数字。\n\n### 示例\n\n```\n输入: n = 13, k = 2\n输出: 10\n解释: 字典序排列为 [1,10,11,12,13,2,3,4,5,6,7,8,9]，第 2 小是 10\n```\n\n```\n输入: n = 1, k = 1\n输出: 1\n```\n\n### 约束\n\n- `1 <= k <= n <= 10^9`\n\n### 提示\n\n将 1~n 看作十叉字典树。关键函数 `count(prefix, n)` 计算以 prefix 为前缀的数字个数。从 prefix=1 开始，如果 count <= k-1 则跳到下一个兄弟节点 prefix+1（k 减去 count），否则深入 prefix*10（k 减 1）。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n, k = map(int, input().split())\n    # 输出字典序第 k 小的数字\n    pass\n\nsolve()\n",
+    "lc_template": "def findKthNumber(n, k):\n    # 返回字典序第 k 小的数字\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn, k = map(int, input().split())\nprint(findKthNumber(n, k))\n",
+    "test_cases": [
+      {
+        "input": "13 2",
+        "expected_output": "10"
+      },
+      {
+        "input": "1 1",
+        "expected_output": "1"
+      },
+      {
+        "input": "100 10",
+        "expected_output": "17"
+      }
+    ],
+    "lc_input_fmt": "n = {1:1}, k = {1:2}"
+  },
+  {
+    "title": "序列切分使两部分方差和最大",
+    "difficulty": "Medium",
+    "tags": [
+      "数学",
+      "前缀和",
+      "枚举"
+    ],
+    "source": "面试高频",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定一个长度为 n 的正整数序列，将其切分为两个非空的连续部分，使得两部分的方差之和最大。输出这个最大方差之和（保留 4 位小数）。\n\n方差公式：`Var(X) = E(X^2) - E(X)^2 = (sum_sq / cnt) - (sum / cnt)^2`\n\n### 示例\n\n```\n输入: 4\n1 2 3 4\n输出: 0.5000\n解释: 切分为 [1] 和 [2,3,4]，方差分别为 0 和 2/3，和为 0.6667\n或切分为 [1,2,3] 和 [4]，方差分别为 2/3 和 0，和为 0.6667\n或切分为 [1,2] 和 [3,4]，方差分别为 0.25 和 0.25，和为 0.5\n最大为 0.6667\n```\n\n### 约束\n\n- `2 <= n <= 10^5`\n- `1 <= a[i] <= 10^6`\n\n### 提示\n\n枚举切分点，动态维护左右两部分的 sum 和 sum_sq，用化简后的方差公式 O(1) 计算每个切分方案的方差和。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    a = list(map(int, input().split()))\n    # 输出最大方差和，保留 4 位小数\n    pass\n\nsolve()\n",
+    "lc_template": "def maxVarianceSum(a):\n    # 返回最大方差和 (float)\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\na = list(map(int, input().split()))\nprint(f'{maxVarianceSum(a):.4f}')\n",
+    "test_cases": [
+      {
+        "input": "4\n1 2 3 4",
+        "expected_output": "0.6667"
+      },
+      {
+        "input": "2\n1 1",
+        "expected_output": "0.0000"
+      },
+      {
+        "input": "3\n1 1 100",
+        "expected_output": "2178.0000"
+      }
+    ],
+    "lc_input_fmt": "a = {2[]}"
+  },
+  {
+    "title": "LRU 缓存",
+    "difficulty": "Medium",
+    "tags": [
+      "哈希表",
+      "链表",
+      "设计"
+    ],
+    "source": "LeetCode #146",
+    "source_url": "https://leetcode.cn/problems/lru-cache/",
+    "description": "## 题目描述\n\n请你设计并实现一个满足 LRU（最近最少使用）缓存约束的数据结构。\n\n实现 `LRUCache` 类：\n\n- `LRUCache(int capacity)` 以正整数作为容量初始化 LRU 缓存\n- `int get(int key)` 如果关键字存在于缓存中，则返回其值，否则返回 -1\n- `void put(int key, int value)` 如果关键字已经存在，则变更其值；如果不存在，则插入。当缓存容量达到上限时，在写入新数据前删除最久未使用的数据值。\n\n`get` 和 `put` 必须以 O(1) 的时间复杂度运行。\n\n### 示例\n\n```\n输入:\ncapacity = 2\nput 1 1\nput 2 2\nget 1      -> 1\nput 3 3    (淘汰 key 2)\nget 2      -> -1\nput 4 4    (淘汰 key 1)\nget 1      -> -1\nget 3      -> 3\nget 4      -> 4\n```\n\n### 约束\n\n- `1 <= capacity <= 3000`\n- `0 <= key <= 10^4`\n\n### 输入格式 (ACM)\n\n第一行：容量 capacity 和操作数 m。后续 m 行：`get key` 或 `put key value`。对 get 操作输出结果。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    cap, m = map(int, input().split())\n    # 实现 LRU 缓存\n    # 对每个 get 操作输出结果\n    for _ in range(m):\n        line = input().split()\n        pass\n\nsolve()\n",
+    "lc_template": "class LRUCache:\n    def __init__(self, capacity):\n        pass\n\n    def get(self, key):\n        # 返回值或 -1\n        pass\n\n    def put(self, key, value):\n        pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\ncap, m = map(int, input().split())\ncache = LRUCache(cap)\nfor _ in range(m):\n    line = input().split()\n    if line[0] == 'get':\n        print(cache.get(int(line[1])))\n    else:\n        cache.put(int(line[1]), int(line[2]))\n",
+    "test_cases": [
+      {
+        "input": "2 9\nput 1 1\nput 2 2\nget 1\nput 3 3\nget 2\nput 4 4\nget 1\nget 3\nget 4",
+        "expected_output": "1\n-1\n-1\n3\n4"
+      },
+      {
+        "input": "1 5\nput 1 10\nget 1\nput 2 20\nget 1\nget 2",
+        "expected_output": "10\n-1\n20"
+      }
+    ],
+    "lc_input_fmt": "capacity = {1:1}\n{2..}"
+  },
+  {
+    "title": "实现前缀树",
+    "difficulty": "Medium",
+    "tags": [
+      "字典树",
+      "设计",
+      "哈希表"
+    ],
+    "source": "LeetCode #208",
+    "source_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/",
+    "description": "## 题目描述\n\n实现 Trie（前缀树）类：\n\n- `Trie()` 初始化前缀树对象\n- `void insert(String word)` 向前缀树中插入字符串 word\n- `boolean search(String word)` 如果字符串 word 在前缀树中，返回 true；否则返回 false\n- `boolean startsWith(String prefix)` 如果之前已经插入的字符串中有以 prefix 为前缀的，返回 true；否则返回 false\n\n### 示例\n\n```\ninsert(\"apple\")\nsearch(\"apple\")     -> true\nsearch(\"app\")       -> false\nstartsWith(\"app\")   -> true\ninsert(\"app\")\nsearch(\"app\")       -> true\n```\n\n### 约束\n\n- `1 <= word.length, prefix.length <= 2000`\n- `word` 和 `prefix` 仅由小写英文字母组成\n\n### 提示\n\n每个 TrieNode 维护一个 `children` 哈希表（char -> TrieNode）和 `is_end` 标记。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    m = int(input())\n    # 实现 Trie\n    for _ in range(m):\n        line = input().split()\n        # insert word / search word / startsWith prefix\n        pass\n\nsolve()\n",
+    "lc_template": "class Trie:\n    def __init__(self):\n        # children: dict[char, TrieNode], is_end: bool\n        pass\n\n    def insert(self, word):\n        pass\n\n    def search(self, word):\n        # 返回 bool\n        pass\n\n    def startsWith(self, prefix):\n        # 返回 bool\n        pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nm = int(input())\ntrie = Trie()\nfor _ in range(m):\n    parts = input().split()\n    op = parts[0]\n    arg = parts[1]\n    if op == 'insert':\n        trie.insert(arg)\n    elif op == 'search':\n        print('true' if trie.search(arg) else 'false')\n    elif op == 'startsWith':\n        print('true' if trie.startsWith(arg) else 'false')\n",
+    "test_cases": [
+      {
+        "input": "6\ninsert apple\nsearch apple\nsearch app\nstartsWith app\ninsert app\nsearch app",
+        "expected_output": "true\nfalse\ntrue\ntrue"
+      },
+      {
+        "input": "4\ninsert hello\nsearch hell\nstartsWith hell\nsearch hello",
+        "expected_output": "false\ntrue\ntrue"
+      }
+    ],
+    "lc_input_fmt": "{2..}"
+  },
+  {
+    "title": "寻找峰值",
+    "difficulty": "Medium",
+    "tags": [
+      "数组",
+      "二分查找"
+    ],
+    "source": "LeetCode #162",
+    "source_url": "https://leetcode.cn/problems/find-peak-element/",
+    "description": "## 题目描述\n\n峰值元素是指其值严格大于左右相邻值的元素。\n\n给你一个整数数组 `nums`，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 **任何一个** 峰值所在位置即可。\n\n你可以假设 `nums[-1] = nums[n] = -∞`。\n\n你必须实现时间复杂度为 `O(log n)` 的算法来解决此问题。\n\n### 示例\n\n```\n输入: nums = [1,2,3,1]\n输出: 2\n解释: 3 是峰值元素，返回其索引 2\n```\n\n```\n输入: nums = [1,2,1,3,5,6,4]\n输出: 5\n解释: 返回索引 1 或 5 均可\n```\n\n### 约束\n\n- `1 <= nums.length <= 1000`\n- `nums[i] != nums[i + 1]`\n\n### 提示\n\n二分查找：比较 nums[mid] 和 nums[mid+1]，如果 nums[mid] < nums[mid+1] 则峰值在右半边，否则在左半边。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    nums = list(map(int, input().split()))\n    # 输出峰值的索引\n    pass\n\nsolve()\n",
+    "lc_template": "def findPeakElement(nums):\n    # 返回峰值元素的索引\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nnums = list(map(int, input().split()))\nidx = findPeakElement(nums)\nprint(idx)\n",
+    "test_cases": [
+      {
+        "input": "4\n1 2 3 1",
+        "expected_output": "2"
+      },
+      {
+        "input": "1\n1",
+        "expected_output": "0"
+      }
+    ],
+    "lc_input_fmt": "nums = {2[]}"
+  },
+  {
+    "title": "最长连续序列",
+    "difficulty": "Medium",
+    "tags": [
+      "数组",
+      "哈希表"
+    ],
+    "source": "LeetCode #128",
+    "source_url": "https://leetcode.cn/problems/longest-consecutive-sequence/",
+    "description": "## 题目描述\n\n给定一个未排序的整数数组 `nums`，找出数字连续的最长序列（不要求数组中的元素在原始位置上连续）的长度。\n\n请你设计并实现时间复杂度为 `O(n)` 的算法解决此问题。\n\n### 示例\n\n```\n输入: nums = [100,4,200,1,3,2]\n输出: 4\n解释: 最长数字连续序列是 [1,2,3,4]，长度为 4\n```\n\n```\n输入: nums = [0,3,7,2,5,8,4,6,0,1]\n输出: 9\n```\n\n### 约束\n\n- `0 <= nums.length <= 10^5`\n- `-10^9 <= nums[i] <= 10^9`\n\n### 提示\n\n将所有数放入 HashSet。遍历每个数 num，若 num-1 不在 set 中（说明 num 是连续序列的起点），则向后扩展计数。\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    nums = list(map(int, input().split())) if n > 0 else []\n    # 输出最长连续序列的长度\n    pass\n\nsolve()\n",
+    "lc_template": "def longestConsecutive(nums):\n    # 返回最长连续序列的长度\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nnums = list(map(int, input().split())) if n > 0 else []\nprint(longestConsecutive(nums))\n",
+    "test_cases": [
+      {
+        "input": "6\n100 4 200 1 3 2",
+        "expected_output": "4"
+      },
+      {
+        "input": "10\n0 3 7 2 5 8 4 6 0 1",
+        "expected_output": "9"
+      },
+      {
+        "input": "0",
+        "expected_output": "0"
+      }
+    ],
+    "lc_input_fmt": "nums = {2[]}"
+  },
+  {
+    "title": "最小的n",
+    "difficulty": "Medium",
+    "tags": [
+      "数学",
+      "质因数分解"
+    ],
+    "source": "字节跳动面试真题",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定一个正整数 $n$，你可以对这个正整数进行两种操作：\n\n1. 将 $n$ 乘以任意一个正整数\n2. 将 $n$ 开方变成 $\\sqrt{n}$，注意如果要执行开方操作，$n$ 必须是完全平方数\n\n你可以执行上述两个操作任意多次，求可能得到的最小的 $n$ 是多少？若实现最小的 $n$，最少需要执行几次操作？\n\n输出两个整数，分别为最小值和最少操作次数，空格分隔。\n\n### 示例\n\n```\n输入: 256\n输出: 2 3\n解释: 256=2^8 → sqrt→16=2^4 → sqrt→4=2^2 → sqrt→2   (3 次开方)\n```\n\n```\n输入: 72\n输出: 6 3\n解释: 72=2^3*3^2 → *18→1296=2^4*3^4 → sqrt→36=2^2*3^2 → sqrt→6   (1 次乘法 + 2 次开方)\n```\n\n### 约束\n\n- `1 <= n <= 10^9`\n\n### 提示\n\n1. 对 n 做质因数分解，最小值 = 各质因子的乘积（无平方因子核）\n2. 设最大指数为 e_max，需要 k = ceil(log2(e_max)) 次开方\n3. 如果所有指数恰好都等于 2^k，则不需要乘法操作，总次数 = k；否则需要 1 次乘法将所有指数补齐到 2^k，总次数 = k + 1\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\ndef solve():\n    n = int(input())\n    # 输出最小值和最少操作次数\n    pass\n\nsolve()\n",
+    "lc_template": "def minN(n):\n    # 返回 (最小值, 最少操作次数)\n    pass\n",
+    "lc_wrapper": "import sys\ninput = sys.stdin.readline\nn = int(input())\nval, ops = minN(n)\nprint(val, ops)\n",
+    "test_cases": [
+      {
+        "input": "256",
+        "expected_output": "2 3"
+      },
+      {
+        "input": "72",
+        "expected_output": "6 3"
+      },
+      {
+        "input": "36",
+        "expected_output": "6 1"
+      },
+      {
+        "input": "12",
+        "expected_output": "6 2"
+      },
+      {
+        "input": "1",
+        "expected_output": "1 0"
+      },
+      {
+        "input": "7",
+        "expected_output": "7 0"
+      }
+    ],
+    "lc_input_fmt": "n = {1}"
+  },
+  {
+    "title": "N×3方格填数",
+    "difficulty": "Medium",
+    "tags": [
+      "动态规划",
+      "状态压缩",
+      "组合数学"
+    ],
+    "source": "阿里巴巴 2021春招",
+    "source_url": "",
+    "description": "## 题目描述\n\n有 3 种数字卡片，编号分别为 1、2、3，每种卡片数量不限。将这些数字填入一个 **N×3** 的方格（每格一张），要求：\n\n- 上下相邻的格子中数字不同\n- 左右相邻的格子中数字不同\n\n问共有多少种合法的填法？答案对 $10^9 + 7$ 取模。\n\n### 示例\n\n```\n输入:\n2\n1\n2\n\n输出:\n12\n54\n```\n\n**说明：** n=1 时，1×3 的行中相邻格子不同，共 3×2×2 = 12 种。\n\n### 数据范围\n\n- $1 \\le T \\le 500$\n- $1 \\le n \\le 10^5$\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\nMOD = 10**9 + 7\n\nT = int(input())\nfor _ in range(T):\n    n = int(input())\n    # 按行 DP：每行只有两种形态\n    # ABA 型（两端相同）: 初始 6 种\n    # ABC 型（三端不同）: 初始 6 种\n    # 转移: f' = 3f + 2g,  g' = 2f + 2g\n    f, g = 6, 6\n    for _ in range(n - 1):\n        f, g = (3*f + 2*g) % MOD, (2*f + 2*g) % MOD\n    print((f + g) % MOD)\n",
+    "test_cases": [
+      {
+        "input": "1\n1",
+        "expected_output": "12"
+      },
+      {
+        "input": "1\n2",
+        "expected_output": "54"
+      },
+      {
+        "input": "3\n1\n2\n3",
+        "expected_output": "12\n54\n246"
+      },
+      {
+        "input": "1\n10",
+        "expected_output": "10107954"
+      }
+    ]
+  },
+  {
+    "title": "词语模式匹配",
+    "difficulty": "Easy",
+    "tags": [
+      "哈希表",
+      "字符串",
+      "双射"
+    ],
+    "source": "阿里巴巴 2021春招",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定一个模式字符串（如 `abba`）和一个由空格分隔的词语字符串（如 `北京 杭州 杭州 北京`），判断词语序列是否与模式**完全匹配**（双射关系：模式中每个字母唯一对应一个词语，不同字母对应不同词语）。\n\n### 示例\n\n```\n输入:\nabba\n北京 杭州 杭州 北京\n\n输出:\ntrue\n```\n\n```\n输入:\naabb\n北京 杭州 杭州 北京\n\n输出:\nfalse\n```\n\n### 数据范围\n\n- 模式字符串由小写字母组成，长度与词语数相同\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\npattern = input().strip()\nwords = input().strip().split()\nif len(pattern) != len(words):\n    print(\"false\")\nelse:\n    c2w, w2c = {}, {}\n    ok = True\n    for c, w in zip(pattern, words):\n        if c in c2w:\n            if c2w[c] != w:\n                ok = False; break\n        else:\n            if w in w2c and w2c[w] != c:\n                ok = False; break\n            c2w[c] = w\n            w2c[w] = c\n    print(\"true\" if ok else \"false\")\n",
+    "test_cases": [
+      {
+        "input": "abba\n北京 杭州 杭州 北京",
+        "expected_output": "true"
+      },
+      {
+        "input": "aabb\n北京 杭州 杭州 北京",
+        "expected_output": "false"
+      },
+      {
+        "input": "ab\n北京 北京",
+        "expected_output": "false"
+      },
+      {
+        "input": "aa\n北京 北京",
+        "expected_output": "true"
+      },
+      {
+        "input": "abc\n狗 猫 狗",
+        "expected_output": "false"
+      }
+    ]
+  },
+  {
+    "title": "删除字符使字典序最小",
+    "difficulty": "Medium",
+    "tags": [
+      "贪心",
+      "单调栈",
+      "字符串"
+    ],
+    "source": "阿里巴巴笔试",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定一个长度为 n 的字符串，从中**恰好删除 m 个字符**，使剩余字符串的**字典序最小**。\n\n### 示例\n\n```\n输入:\n2\n5 2\nabcab\n10 4\nlkqijxsnny\n\n输出:\naab\nijsnny\n```\n\n**说明：** 第一组：`abcab` 删掉 `c` 和第二个 `b`，得 `aab`。\n\n### 数据范围\n\n- $1 \\le T \\le 5$\n- $2 \\le n \\le 10^5$，$1 \\le m < n$\n- 字符串仅含小写字母\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\nT = int(input())\nfor _ in range(T):\n    n, m = map(int, input().split())\n    s = input().strip()\n    stack = []\n    left = m\n    for c in s:\n        while left > 0 and stack and stack[-1] > c:\n            stack.pop()\n            left -= 1\n        stack.append(c)\n    # 若删除次数未用完，从末尾截断\n    if left > 0:\n        stack = stack[:-left]\n    print(''.join(stack))\n",
+    "test_cases": [
+      {
+        "input": "2\n5 2\nabcab\n10 4\nlkqijxsnny",
+        "expected_output": "aab\nijsnny"
+      },
+      {
+        "input": "1\n5 1\nbcabc",
+        "expected_output": "babc"
+      },
+      {
+        "input": "1\n6 3\naaabbb",
+        "expected_output": "aaa"
+      },
+      {
+        "input": "1\n4 2\ndcba",
+        "expected_output": "ba"
+      }
+    ]
+  },
+  {
+    "title": "最小花费乘到目标",
+    "difficulty": "Medium",
+    "tags": [
+      "DFS",
+      "动态规划",
+      "数学"
+    ],
+    "source": "阿里巴巴笔试",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定整数 $n$，通过若干次操作使其**不小于** $m$：\n\n- **操作 A**：$n \\leftarrow 2n$，花费 $w_2$\n- **操作 B**：$n \\leftarrow 3n$，花费 $w_3$\n\n如果 $n$ 已经 $\\ge m$，输出 0。否则输出达到目标的**最小总花费**。\n\n### 示例\n\n```\n输入:\n4\n1 6 2 3\n4 32 3 4\n2 1 1 2\n3 12 1 2\n\n输出:\n5\n9\n0\n2\n```\n\n**说明：** 第一组：$1 \\to 2(+2) \\to 6(+3) = 5$。\n\n### 数据范围\n\n- $1 \\le T \\le 10^4$\n- $1 \\le n, m \\le 2^{31} - 1$，$1 \\le w_2, w_3 \\le 1000$\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\nsys.setrecursionlimit(300)\n\ndef min_cost(cur, m, w2, w3):\n    if cur >= m:\n        return 0\n    # 只需尝试到约 2^31，最多 31 层\n    return min(w2 + min_cost(cur * 2, m, w2, w3),\n               w3 + min_cost(cur * 3, m, w2, w3))\n\nT = int(input())\nfor _ in range(T):\n    n, m, w2, w3 = map(int, input().split())\n    print(min_cost(n, m, w2, w3))\n",
+    "test_cases": [
+      {
+        "input": "4\n1 6 2 3\n4 32 3 4\n2 1 1 2\n3 12 1 2",
+        "expected_output": "5\n9\n0\n2"
+      },
+      {
+        "input": "1\n1 2147483647 1 4",
+        "expected_output": "31"
+      },
+      {
+        "input": "2\n1 100 3 2\n5 5 1 1",
+        "expected_output": "10\n0"
+      }
+    ]
+  },
+  {
+    "title": "矩阵聚光灯得分",
+    "difficulty": "Medium",
+    "tags": [
+      "前缀和",
+      "矩阵",
+      "模拟"
+    ],
+    "source": "阿里巴巴 2022笔试",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定一个 $n \\times m$ 的矩阵，`0` 表示聚光灯，`1` 表示人。\n\n每个聚光灯向**上、下、左、右**四个方向**无限远**照射，若某方向上（不含自身格子）**存在至少一个人**，则在该方向得 1 分。\n\n求所有聚光灯的**总得分**。\n\n### 示例\n\n```\n输入:\n2 4\n0 1 0 0\n1 0 1 0\n\n输出:\n9\n```\n\n### 数据范围\n\n- $1 \\le n, m \\le 10^3$\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\nn, m = map(int, input().split())\ngrid = [list(map(int, input().split())) for _ in range(n)]\n\n# 预计算每行/每列的前缀和，O(1) 判断某方向是否有 1\nrow_sum = [[0]*(m+1) for _ in range(n)]\ncol_sum = [[0]*(n+1) for _ in range(m)]\nfor i in range(n):\n    for j in range(m):\n        row_sum[i][j+1] = row_sum[i][j] + grid[i][j]\nfor j in range(m):\n    for i in range(n):\n        col_sum[j][i+1] = col_sum[j][i] + grid[i][j]\n\ntotal = 0\nfor i in range(n):\n    for j in range(m):\n        if grid[i][j] == 0:\n            left  = row_sum[i][j]              # 左边 [0,j)\n            right = row_sum[i][m] - row_sum[i][j+1]  # 右边 (j,m)\n            up    = col_sum[j][i]              # 上方 [0,i)\n            down  = col_sum[j][n] - col_sum[j][i+1]  # 下方 (i,n)\n            total += (left>0) + (right>0) + (up>0) + (down>0)\nprint(total)\n",
+    "test_cases": [
+      {
+        "input": "2 4\n0 1 0 0\n1 0 1 0",
+        "expected_output": "9"
+      },
+      {
+        "input": "1 3\n1 0 1",
+        "expected_output": "2"
+      },
+      {
+        "input": "2 2\n0 0\n0 1",
+        "expected_output": "2"
+      },
+      {
+        "input": "3 3\n0 1 0\n1 0 1\n0 1 0",
+        "expected_output": "12"
+      }
+    ]
+  },
+  {
+    "title": "十六进制转二进制计1",
+    "difficulty": "Easy",
+    "tags": [
+      "位运算",
+      "字符串",
+      "哈希表"
+    ],
+    "source": "阿里巴巴 2022笔试",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定一个以 `0x` 开头的十六进制字符串，求其对应**二进制表示**中 `1` 的个数。\n\n### 示例\n\n```\n输入: 0x3f\n输出: 6\n```\n\n**说明：** `0x3f = 63 = 0b00111111`，共 6 个 1。\n\n### 数据范围\n\n- 字符串长度不超过 20000（十六进制位数）\n- 十六进制字符：`0-9`，`a-f`（小写）\n",
+    "template_code": "import sys\ninput = sys.stdin.readline\n\nBITS = {'0':0,'1':1,'2':1,'3':2,'4':1,'5':2,'6':2,'7':3,\n        '8':1,'9':2,'a':2,'b':3,'c':2,'d':3,'e':3,'f':4}\n\ns = input().strip()\nprint(sum(BITS[c] for c in s[2:]))  # 跳过 \"0x\"\n",
+    "test_cases": [
+      {
+        "input": "0x3f",
+        "expected_output": "6"
+      },
+      {
+        "input": "0xff",
+        "expected_output": "8"
+      },
+      {
+        "input": "0x0",
+        "expected_output": "0"
+      },
+      {
+        "input": "0xa5",
+        "expected_output": "4"
+      },
+      {
+        "input": "0x1",
+        "expected_output": "1"
+      }
+    ]
+  },
+  {
+    "title": "三元组差值统计",
+    "difficulty": "Medium",
+    "tags": [
+      "哈希表",
+      "组合数学",
+      "数组"
+    ],
+    "source": "阿里巴巴 2023笔试",
+    "source_url": "",
+    "description": "## 题目描述\n\n给定长度为 $n$ 的整数数组 $a$，统计满足条件的三元组 $(i, j, k)$（$0 \\le i < j < k < n$）的数量：\n\n$$\\max(a_i, a_j, a_k) - \\min(a_i, a_j, a_k) = 1$$\n\n即三元组中的最大值与最小值**恰好相差 1**。\n\n### 示例\n\n```\n输入:\n5\n1 2 1 2 1\n\n输出:\n9\n```\n\n**说明：** 满足条件的三元组由值 1 和 2 组成。包含两个 1 一个 2 的有 $C_3^2 \\times 2 = 6$ 个，包含一个 1 两个 2 的有 $3 \\times C_2^2 = 3$ 个，共 9 个。\n\n### 数据范围\n\n- $1 \\le n \\le 10^5$\n- $1 \\le a_i \\le 10^9$\n",
+    "template_code": "import sys\nfrom collections import Counter\ninput = sys.stdin.readline\n\nn = int(input())\na = list(map(int, input().split()))\nfreq = Counter(a)\n\nans = 0\nseen = set()\nfor v in freq:\n    w = v + 1\n    if w in freq and (v, w) not in seen:\n        seen.add((v, w))\n        f1, f2 = freq[v], freq[w]\n        # 两个 v + 一个 w: C(f1,2)*f2\n        ans += f1*(f1-1)//2 * f2\n        # 一个 v + 两个 w: f1*C(f2,2)\n        ans += f1 * (f2*(f2-1)//2)\nprint(ans)\n",
+    "test_cases": [
+      {
+        "input": "5\n1 2 1 2 1",
+        "expected_output": "9"
+      },
+      {
+        "input": "3\n1 2 3",
+        "expected_output": "0"
+      },
+      {
+        "input": "4\n1 1 2 2",
+        "expected_output": "4"
+      },
+      {
+        "input": "6\n3 3 3 4 4 4",
+        "expected_output": "18"
+      }
+    ]
+  }
+]
